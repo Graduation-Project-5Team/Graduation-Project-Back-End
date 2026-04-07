@@ -1,4 +1,4 @@
-package comso.Team5.GP.user.dto;
+package comso.Team5.GP.users.dto;
 
 public class UserLoginResponse {
 }

@@ -1,17 +1,17 @@
-package comso.Team5.GP.artworks.entity;
+package comso.Team5.GP.users.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.IdGeneratorType;
 
 @Entity
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class Artworks {
+public class Users {
+
     @Id
-    private long id;
+    private Long id;
 }
