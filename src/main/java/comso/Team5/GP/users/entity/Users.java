@@ -1,4 +1,4 @@
-package comso.Team5.GP.user.entity;
+package comso.Team5.GP.users.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
