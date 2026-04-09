@@ -1,25 +1,4 @@
-CREATE TABLE Users (
-    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    user_id VARCHAR(100) NOT NULL UNIQUE,
-    nickname VARCHAR(50) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(10) NOT NULL DEFAULT 'USER'
-        -- TO DO ENUM('USER', 'STUDENT', 'ADMIN') --
-    ,dept_id BIGINT NULL,
-    is_verified BOOLEAN NOT NULL DEFAULT false,
-    create_at TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP
-    -- TO DO DATETIME --
-);
-
-CREATE TABLE Artworks (
-    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    description TEXT NULL,
-    like_count INT NOT NULL DEFAULT 0,
-    create_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    -- TO DO  DATETIME--
-    update_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    -- TO DO DATETIME --
-    CONSTRAINT fk_artworks_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+INSERT INTO Users
+    (user_id, email, nickname, password, role, dept_id, is_verified, create_at)
+values
+    ('admin', 'admin@admin.com', '관리자', 'admin123', 'ADMIN', 1, true, CURRENT_TIMESTAMP);
