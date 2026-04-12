@@ -18,10 +18,10 @@ public class Users {
     // 데이터 생성시 유저 테이블 id 자동 증가
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long userId;
 
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @Column(name = "id", nullable = false)
+    private String id;
 
     @Column(nullable = false)
     private String password;
