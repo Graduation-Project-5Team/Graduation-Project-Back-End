@@ -35,6 +35,20 @@ spring:
       mode: always
       schema-locations: classpath:db/schema.sql
 
+  # Spring Mail 설정 추가 (Gmail 기준)
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}        # ← 본인 Gmail 주소
+    password: ${MAIL_PASSWORD}        # ← Gmail 앱 비밀번호 (계정 -> 보안 -> 2단계 인증)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
 jwt:
   # TODO scretKey: ${JWT_SCRET_KEY}
   secretKey: "asdfqwrt!@#QWEASDE#@ESAXc1241234"
@@ -46,3 +60,4 @@ jwt:
 
 server:
   port: 8080
+
