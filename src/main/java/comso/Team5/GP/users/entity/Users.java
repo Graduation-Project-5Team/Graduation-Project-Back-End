@@ -3,7 +3,6 @@ package comso.Team5.GP.users.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -16,6 +15,7 @@ public class Users {
 
     // 데이터 생성시 유저 테이블 id 자동 증가
     @Id
+    @Column(name="user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
