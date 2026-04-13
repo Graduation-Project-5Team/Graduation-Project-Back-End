@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @Table(name = "Users")
 public class Users {
@@ -18,7 +17,7 @@ public class Users {
     // 데이터 생성시 유저 테이블 id 자동 증가
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long userId;
+    private Long userId;
 
     @Column(name = "id", nullable = false)
     private String id;
@@ -36,7 +35,7 @@ public class Users {
     private String role;
 
     @Column(name = "dept_id")
-    private long deptId;
+    private Long deptId;
 
     @Column(name = "is_verified")
     private boolean isVerified;
