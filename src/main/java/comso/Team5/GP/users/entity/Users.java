@@ -3,25 +3,24 @@ package comso.Team5.GP.users.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @Table(name = "Users")
 public class Users {
 
     // 데이터 생성시 유저 테이블 id 자동 증가
     @Id
+    @Column(name="user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long userId;
 
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @Column(name = "id", nullable = false)
+    private String loginId;
 
     @Column(nullable = false)
     private String password;
@@ -36,7 +35,7 @@ public class Users {
     private String role;
 
     @Column(name = "dept_id")
-    private long deptId;
+    private Long deptId;
 
     @Column(name = "is_verified")
     private boolean isVerified;

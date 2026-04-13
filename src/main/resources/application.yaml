@@ -35,5 +35,14 @@ spring:
       mode: always
       schema-locations: classpath:db/schema.sql
 
+jwt:
+  # TODO scretKey: ${JWT_SCRET_KEY}
+  secretKey: "asdfqwrt!@#QWEASDE#@ESAXc1241234"
+
+  access:
+    # 액세스 토큰 만료시간 1시간 : 1000(ms -> s) * 60 (s -> m) * 60(m -> h)
+    expiration: 3600000
+    header: Authorization
+
 server:
   port: 8080
