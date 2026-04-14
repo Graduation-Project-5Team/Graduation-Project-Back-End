@@ -1,8 +1,8 @@
 package comso.Team5.GP.users.service;
 
-import comso.Team5.GP.users.dto.SignupRequestDto;
-import comso.Team5.GP.users.dto.UserLoginRequest;
-import comso.Team5.GP.users.dto.UserLoginResponse;
+import comso.Team5.GP.users.dto.request.SignupRequestDto;
+import comso.Team5.GP.users.dto.request.UserLoginRequest;
+import comso.Team5.GP.users.dto.response.UserLoginResponse;
 import comso.Team5.GP.users.entity.Users;
 import comso.Team5.GP.users.repository.EmailVerificationRepository;
 import comso.Team5.GP.users.repository.UserRepository;
