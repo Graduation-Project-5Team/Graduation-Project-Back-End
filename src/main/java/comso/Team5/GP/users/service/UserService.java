@@ -1,11 +1,13 @@
 package comso.Team5.GP.users.service;
 
-import comso.Team5.GP.users.dto.UserLoginRequest;
-import comso.Team5.GP.users.dto.UserLoginResponse;
+import comso.Team5.GP.users.dto.request.UserLoginRequest;
+import comso.Team5.GP.users.dto.response.UserLoginResponse;
 import comso.Team5.GP.users.entity.Users;
 import comso.Team5.GP.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import comso.Team5.GP.util.jwt.JwtUtil;
+import comso.Team5.GP.users.dto.request.SignupRequestDto;
+import comso.Team5.GP.users.repository.EmailVerificationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,7 +22,13 @@ public class UserService{
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final EmailVerificationRepository emailVerificationRepository; // 이메일 인증 여부 확인용
 
+    // 학생 이메일 도메인 (상수)
+    private static final String STUDENT_EMAIL_DOMAIN = "@gsuite.induk.ac.kr";
+
+
+    ///  로그인
     public UserLoginResponse login(UserLoginRequest loginRequest){
 
         // 유저 로그인 정보 검증
@@ -42,6 +50,44 @@ public class UserService{
         String accessToken = jwtUtil.generateToken(users.getUserId(), users.getId());
 
         return new UserLoginResponse(accessToken, "Bearer", jwtUtil.getExpirationSeconds());
+    }
+
+
+    /// 회원가입
+    @Transactional
+    public void signup(SignupRequestDto dto) {
+
+        // 중복 아이디 체크
+        if (userRepository.existsByUserLoginId(dto.getId())) {
+            throw new ResponseStatusException(BAD_REQUEST, "이미 사용 중인 아이디입니다.");
+        }
+
+        // 중복 이메일 체크
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new ResponseStatusException(BAD_REQUEST, "이미 가입된 이메일입니다.");
+        }
+
+        // 이메일 인증 완료 여부 체크
+        if (!emailVerificationRepository.existsByEmailAndIsVerifiedTrue(dto.getEmail())) {
+            throw new ResponseStatusException(BAD_REQUEST, "이메일 인증이 완료되지 않았습니다.");
+        }
+
+        // 학생 여부 판단
+        String role = dto.getEmail().endsWith(STUDENT_EMAIL_DOMAIN)
+                ? "ROLE_STUDENT"
+                : "ROLE_USER";
+
+        // [MVP] 비밀번호 암호화 없이 그대로 저장 (나중에 PasswordEncoder 추가 필요)
+        Users user = Users.builder()
+                .id(dto.getId())
+                .password(dto.getPassword())
+                .email(dto.getEmail())
+                .nickname(dto.getName())
+                .role(role)
+                .isVerified(true)
+                .build();
+
+        userRepository.save(user);
     }
 
 }

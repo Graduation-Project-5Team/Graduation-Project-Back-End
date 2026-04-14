@@ -59,3 +59,8 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 >>>>>>> 00147708e4902b049ead5ad4f263e4959865ee19
+
+
+# custom : email method - application-secret.yaml
+application-secret.yaml
+.env
