@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "Users")
+@Table(name = "users")
 public class Users {
 
     // 데이터 생성시 유저 테이블 id 자동 증가
@@ -20,7 +20,7 @@ public class Users {
     private Long userId;
 
     @Column(name = "id", nullable = false)
-    private String loginId;
+    private String id;
 
     @Column(nullable = false)
     private String password;
