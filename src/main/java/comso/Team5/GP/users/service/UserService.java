@@ -38,7 +38,7 @@ public class UserService{
         }
 
         // 유저 로그인 정보 조회
-        Users users = userRepository.findById(loginRequest.getId())
+        Users users = userRepository.findByUserLoginId(loginRequest.getId())
                 .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "아이디 혹은 비밀번호가 올바르지 않습니다."));
 
         // 유저 비밀번호 검증
@@ -58,7 +58,7 @@ public class UserService{
     public void signup(SignupRequestDto dto) {
 
         // 중복 아이디 체크
-        if (userRepository.existsByIdField(dto.getId())) {
+        if (userRepository.existsByUserLoginId(dto.getId())) {
             throw new ResponseStatusException(BAD_REQUEST, "이미 사용 중인 아이디입니다.");
         }
 
