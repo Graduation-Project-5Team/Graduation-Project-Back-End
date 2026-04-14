@@ -1,4 +1,7 @@
 spring:
+  config:
+    import: application-secret.yaml  # secret 파일 불러오기
+
   application:
     name: GP
 
@@ -35,6 +38,33 @@ spring:
       mode: always
       schema-locations: classpath:db/schema.sql
 
+  # Spring Mail 설정 추가 (Gmail 기준)
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username:   # 공백처리 -> application-secret.yaml에 생성 시 본인 Gmail 주소 덮어씀
+    password: # 공백처리 -> application-secret.yaml에 생성 시 본인 Gmail 주소 덮어씀
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+#    Gmail 앱 비밀번호 발급 방법
+#    1단계 - 2단계 인증 활성화
+#
+#    myaccount.google.com 접속
+#    왼쪽 메뉴 보안 클릭
+#    2단계 인증 → 활성화
+#
+#    2단계 - 앱 비밀번호 발급
+#
+#    Google 계정 검색창에 "앱 비밀번호" 검색
+#    앱 이름 아무거나 입력 (예: GP) → 만들기
+#    생성된 16자리 비밀번호 복사 (공백 제거하고 사용)
+
 jwt:
   # TODO scretKey: ${JWT_SCRET_KEY}
   secretKey: "asdfqwrt!@#QWEASDE#@ESAXc1241234"
@@ -46,3 +76,4 @@ jwt:
 
 server:
   port: 8080
+

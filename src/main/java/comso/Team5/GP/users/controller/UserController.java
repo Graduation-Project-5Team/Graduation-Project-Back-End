@@ -1,7 +1,7 @@
 package comso.Team5.GP.users.controller;
 
-import comso.Team5.GP.users.dto.UserLoginRequest;
-import comso.Team5.GP.users.dto.UserLoginResponse;
+import comso.Team5.GP.users.dto.request.UserLoginRequest;
+import comso.Team5.GP.users.dto.response.UserLoginResponse;
 import comso.Team5.GP.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

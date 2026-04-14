@@ -1,4 +1,4 @@
-package comso.Team5.GP.users.dto;
+package comso.Team5.GP.users.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
