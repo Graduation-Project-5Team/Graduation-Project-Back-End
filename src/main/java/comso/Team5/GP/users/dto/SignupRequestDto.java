@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
-public class SignupRequestDto {
+public class SignupRequestDto { // 회원가입 형식 검증
 
     @NotBlank(message = "아이디를 입력해주세요.")
     @Size(min = 5, max = 20, message = "아이디는 5~20자 사이여야 합니다.")
