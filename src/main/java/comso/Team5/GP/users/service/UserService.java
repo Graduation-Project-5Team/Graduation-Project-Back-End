@@ -30,7 +30,7 @@ public class UserService{
         }
 
         // 유저 로그인 정보 조회
-        Users users = userRepository.findByLoginId(loginRequest.getId())
+        Users users = userRepository.findById(loginRequest.getId())
                 .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "아이디 혹은 비밀번호가 올바르지 않습니다."));
 
         // 유저 비밀번호 검증
@@ -39,7 +39,7 @@ public class UserService{
         }
 
         // 토큰 발급
-        String accessToken = jwtUtil.generateToken(users.getUserId(), users.getLoginId());
+        String accessToken = jwtUtil.generateToken(users.getUserId(), users.getId());
 
         return new UserLoginResponse(accessToken, "Bearer", jwtUtil.getExpirationSeconds());
     }

@@ -10,7 +10,8 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     Optional<Users> findById(String id);
 
     ///  이메일 중복 체크
-    boolean existsById(String id);
+    //        JpaRepository의 existsById(Long id)와 충돌 방지
+    boolean existsByIdField(String id); // id 컬럼 중복 체크
     boolean existsByEmail(String email);
     Optional<Users> findByEmail(String email);
 
