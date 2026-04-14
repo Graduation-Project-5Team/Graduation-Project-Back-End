@@ -2,15 +2,20 @@ package comso.Team5.GP.users.service;
 
 import comso.Team5.GP.users.entity.EmailVerification;
 import comso.Team5.GP.users.repository.EmailVerificationRepository;
+import comso.Team5.GP.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
 
 @Slf4j // 로그(Log)를 쉽고 편하게 남길 수 있도록 도와주는 Lombok(롬복) 라이브러리의 어노테이션
 @Service
@@ -19,6 +24,7 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
     private final EmailVerificationRepository emailVerificationRepository;
+    private final UserRepository userRepository; // 이메일 중복 체크용
 
     // 인증코드 유효시간 5분
     private static final int CODE_EXPIRY_MINUTES = 5;
@@ -26,6 +32,12 @@ public class EmailService {
     // 인증코드 발송
     @Transactional
     public void sendVerificationCode(String email) {
+
+        // 이미 가입된 이메일이면 인증코드 발송 차단
+        if (userRepository.existsByEmail(email)) {
+            throw new ResponseStatusException(BAD_REQUEST, "이미 가입된 이메일입니다.");
+        }
+
         String code = generateCode();
 
         // 기존 인증 요청이 있으면 삭제 후 새로 저장 (재발송 처리)
