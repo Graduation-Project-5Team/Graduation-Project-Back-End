@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor // @Builder가 내부적으로 전체 필드 생성자를 필요로 하기 때문에 추가.
 //        @NoArgsConstructor와 @Builder를 같이 쓰면 컴파일 에러가 발생
 @NoArgsConstructor
-@Table(name = "Users")
+@Table(name = "users")
 public class Users {
 
     // 데이터 생성시 유저 테이블 id 자동 증가

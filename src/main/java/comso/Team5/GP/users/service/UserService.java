@@ -1,13 +1,13 @@
 package comso.Team5.GP.users.service;
 
-import comso.Team5.GP.users.dto.request.SignupRequestDto;
 import comso.Team5.GP.users.dto.request.UserLoginRequest;
 import comso.Team5.GP.users.dto.response.UserLoginResponse;
 import comso.Team5.GP.users.entity.Users;
-import comso.Team5.GP.users.repository.EmailVerificationRepository;
 import comso.Team5.GP.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import comso.Team5.GP.util.jwt.JwtUtil;
+import comso.Team5.GP.users.dto.request.SignupRequestDto;
+import comso.Team5.GP.users.repository.EmailVerificationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -38,7 +38,7 @@ public class UserService{
         }
 
         // 유저 로그인 정보 조회
-        Users users = userRepository.findByUserLoginId(loginRequest.getId())
+        Users users = userRepository.findById(loginRequest.getId())
                 .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "아이디 혹은 비밀번호가 올바르지 않습니다."));
 
         // 유저 비밀번호 검증
