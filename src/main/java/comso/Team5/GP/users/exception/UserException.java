@@ -1,4 +1,4 @@
-package comso.Team5.GP.users.Exception;
+package comso.Team5.GP.users.exception;
 
 import lombok.Getter;
 

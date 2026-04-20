@@ -9,8 +9,9 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<Users, Long> {
 
-    Optional<Users> findById(String id);
-
+    // 유저 정보 조회 시 아이디로 유저 조회(비밀번호 찾기 등)
+    @Query("SELECT u FROM Users u WHERE u.id = :id")
+    Optional<Users> findByCheckId(@Param("id") String id);
 
     // 로그인 시 아이디로 유저 조회
     @Query("SELECT u FROM Users u WHERE u.id = :id")

@@ -66,6 +66,8 @@ spring:
 #    생성된 16자리 비밀번호 복사 (공백 제거하고 사용)
 
 jwt:
+  issuer: GP
+  
   # TODO scretKey: ${JWT_SCRET_KEY}
   secretKey: "asdfqwrt!@#QWEASDE#@ESAXc1241234"
 

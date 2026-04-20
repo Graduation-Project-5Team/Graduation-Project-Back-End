@@ -1,5 +1,6 @@
 package comso.Team5.GP.users.entity;
 
+import comso.Team5.GP.departments.entity.Departments;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,8 +41,10 @@ public class Users {
     @Column
     private String role;
 
-    @Column(name = "dept_id")
-    private Long deptId;
+    // 학과 테이블과 조인 (N : 1)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dept_id", referencedColumnName = "dept_id")
+    private Departments departments;
 
     @Column(name = "is_verified")
     private boolean isVerified;

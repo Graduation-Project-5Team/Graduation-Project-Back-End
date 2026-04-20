@@ -1,5 +1,14 @@
 package comso.Team5.GP.util.jwt;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import comso.Team5.GP.users.exception.UserException;
+import comso.Team5.GP.users.exception.UserExceptionCode;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -9,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 
+@Slf4j
 @Component
 public class JwtUtil {
 
@@ -19,27 +29,30 @@ public class JwtUtil {
     @Value("${jwt.access.expiration}")
     private long ACCESS_EXPIRATION;
 
-    public String generateToken(Long id, String userId) {
+    @Value("${jwt.issuer:GP}")
+    private String ISSUER;
+
+    public String generateToken(Long userId, String id) {
         Instant now = Instant.now();
         long issuedAt = now.getEpochSecond();
         long expiresAt = now.plusMillis(ACCESS_EXPIRATION).getEpochSecond();
 
         String headerJson = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
 
-        String escapeUserId = esacpeJson(userId);
-        String payloadJson = "{\"sub:\":\""+ escapeUserId + "\""
+        String escapedUserId = escapeJson(id);
+        String payloadJson = "{\"sub\":\""+ escapedUserId + "\""
                 + ",\"id\":" + id
-                + ",\"user_id\":\"" + escapeUserId + "\""
-                + ",\"jat\":" + issuedAt
+                + ",\"iss\":\"" + ISSUER + "\""
+                + ",\"iat\":" + issuedAt
                 + ",\"exp\":" + expiresAt
                 +"}";
 
         String encodeHeader = encodeBase64Url(headerJson);
         String encodePayload = encodeBase64Url(payloadJson);
-        String content = encodeHeader + encodePayload;
+        String content = encodeHeader + "." + encodePayload;
         String signature = sign(content);
 
-        return content + signature;
+        return content + "." + signature;
 
     }
 
@@ -68,7 +81,7 @@ public class JwtUtil {
         }
     }
 
-    private String esacpeJson(String value) {
+    private String escapeJson(String value) {
         if (value == null) {
             return "";
         }
@@ -76,5 +89,41 @@ public class JwtUtil {
                 .replace("\"", "\\\"");
     }
 
+    public String getUserIdFromToken(String token) {
+        return verifyToken(token).getSubject();
+    }
+
+    /**
+     * 페이로드의 숫자 id(PK, user_id)와 sub(로그인 id)를 한 번의 검증으로 반환.
+     */
+    public JwtPrincipal getPrincipalFromToken(String token) {
+        DecodedJWT decodedJWT = verifyToken(token);
+        var idClaim = decodedJWT.getClaim("id");
+        String subject = decodedJWT.getSubject();
+        if (idClaim.isNull() || subject == null || subject.isBlank()) {
+            throw new UserException(UserExceptionCode.INVALID_TOKEN);
+        }
+        return new JwtPrincipal(idClaim.asLong(), subject);
+    }
+
+    private DecodedJWT verifyToken(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
+            JWTVerifier jwtVerifier = JWT.require(algorithm)
+                    .withIssuer(ISSUER)
+                    .build();
+            return jwtVerifier.verify(token);
+        } catch (TokenExpiredException e) {
+            log.error("토큰이 만료되었습니다.");
+            throw new UserException(UserExceptionCode.TOKEN_EXPIRED);
+        } catch (JWTVerificationException e) {
+            log.error("유효하지 않는 토큰입니다.");
+            throw new UserException(UserExceptionCode.INVALID_TOKEN);
+        }
+    }
+
+    // 토큰 검증 후 UserId와 id를 반환하는 객체
+    public record JwtPrincipal(Long userId, String id) {
+    }
 
 }

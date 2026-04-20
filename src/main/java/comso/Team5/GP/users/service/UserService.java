@@ -1,8 +1,11 @@
 package comso.Team5.GP.users.service;
 
 import comso.Team5.GP.users.dto.request.UserLoginRequest;
+import comso.Team5.GP.users.dto.response.UserMeResponse;
 import comso.Team5.GP.users.dto.response.UserLoginResponse;
 import comso.Team5.GP.users.entity.Users;
+import comso.Team5.GP.users.exception.UserException;
+import comso.Team5.GP.users.exception.UserExceptionCode;
 import comso.Team5.GP.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import comso.Team5.GP.util.jwt.JwtUtil;
@@ -38,7 +41,7 @@ public class UserService{
         }
 
         // 유저 로그인 정보 조회
-        Users users = userRepository.findById(loginRequest.getId())
+        Users users = userRepository.findByUserLoginId(loginRequest.getId())
                 .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "아이디 혹은 비밀번호가 올바르지 않습니다."));
 
         // 유저 비밀번호 검증
@@ -90,4 +93,12 @@ public class UserService{
         userRepository.save(user);
     }
 
+
+    public UserMeResponse getUserMe(Long userId, String id) {
+
+        Users user = userRepository.findByCheckId(id).orElseThrow(
+                () -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        return new UserMeResponse(user.getId(), user.getNickname(), user.getRole(), user.getEmail());
+    }
 }
