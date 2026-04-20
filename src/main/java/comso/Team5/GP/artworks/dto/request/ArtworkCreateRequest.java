@@ -1,18 +1,21 @@
 package comso.Team5.GP.artworks.dto.request;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
+import java.time.LocalDate;
+
 @Getter
+@NoArgsConstructor
 public class ArtworkCreateRequest {
-    private Long userId;
-
-    private Long exhiId;
 
     private String title;
 
-    private String description;
+    private LocalDate startDate;
 
-    private int likeCount;
+    private LocalDate endDate;
+
+    private String content;
+
+    // TODO images[] : 이미지 테이블 구현 완료 후 추가 예정
 }

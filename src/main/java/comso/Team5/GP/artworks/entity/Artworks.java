@@ -4,10 +4,9 @@ import comso.Team5.GP.exhibitions.entity.Exhibitions;
 import comso.Team5.GP.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.*;
-import org.h2.engine.User;
-import org.w3c.dom.Text;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,8 +21,6 @@ public class Artworks {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long artworkId;
 
-    // TODO @ManyToMany (N : N)
-    // TODO @JoinColumn()테이블 끼리 연결해야함.
     // 유저 엔티티와 연결 (N : 1)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
@@ -38,14 +35,24 @@ public class Artworks {
     private String title;
 
     @Column(columnDefinition = "TEXT")
-    private String description;
+    private String content;
 
     @Column(name = "like_count")
     private int likeCount;
 
-    @Column(name = "created_at")
-    private LocalDate createdAt;
+    // 사용자가 입력하는 작품 시작일
+    @Column(name = "start_date")
+    private LocalDate startDate;
 
+    // 사용자가 입력하는 작품 종료일
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
+    // 서버에서 자동 기록하는 등록 시각
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    // 서버에서 자동 기록하는 최종 수정 시각
     @Column(name = "updated_at")
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 }

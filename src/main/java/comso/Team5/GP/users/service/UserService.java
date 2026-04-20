@@ -41,7 +41,7 @@ public class UserService{
         }
 
         // 유저 로그인 정보 조회
-        Users users = userRepository.findById(loginRequest.getId())
+        Users users = userRepository.findByUserLoginId(loginRequest.getId())
                 .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "아이디 혹은 비밀번호가 올바르지 않습니다."));
 
         // 유저 비밀번호 검증

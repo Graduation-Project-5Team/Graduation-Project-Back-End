@@ -41,7 +41,7 @@ public class JwtUtil {
 
         String escapedUserId = escapeJson(id);
         String payloadJson = "{\"sub\":\""+ escapedUserId + "\""
-                + ",\"id\":" + id
+                + ",\"id\":" + userId
                 + ",\"iss\":\"" + ISSUER + "\""
                 + ",\"iat\":" + issuedAt
                 + ",\"exp\":" + expiresAt
