@@ -1,8 +1,11 @@
 package comso.Team5.GP.users.service;
 
 import comso.Team5.GP.users.dto.request.UserLoginRequest;
+import comso.Team5.GP.users.dto.response.UserMeResponse;
 import comso.Team5.GP.users.dto.response.UserLoginResponse;
 import comso.Team5.GP.users.entity.Users;
+import comso.Team5.GP.users.exception.UserException;
+import comso.Team5.GP.users.exception.UserExceptionCode;
 import comso.Team5.GP.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import comso.Team5.GP.util.jwt.JwtUtil;
@@ -90,4 +93,12 @@ public class UserService{
         userRepository.save(user);
     }
 
+
+    public UserMeResponse getUserMe(Long userId, String id) {
+
+        Users user = userRepository.findByCheckId(id).orElseThrow(
+                () -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        return new UserMeResponse(user.getId(), user.getNickname(), user.getRole(), user.getEmail());
+    }
 }
