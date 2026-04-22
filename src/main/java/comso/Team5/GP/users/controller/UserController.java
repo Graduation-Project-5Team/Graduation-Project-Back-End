@@ -1,7 +1,7 @@
 package comso.Team5.GP.users.controller;
 
-import comso.Team5.GP.users.exception.UserException;
-import comso.Team5.GP.users.exception.UserExceptionCode;
+import comso.Team5.GP.global.exception.users.UserException;
+import comso.Team5.GP.global.exception.users.UserExceptionCode;
 import comso.Team5.GP.users.dto.request.UserLoginRequest;
 import comso.Team5.GP.users.dto.response.UserMeResponse;
 import comso.Team5.GP.users.dto.response.UserLoginResponse;
