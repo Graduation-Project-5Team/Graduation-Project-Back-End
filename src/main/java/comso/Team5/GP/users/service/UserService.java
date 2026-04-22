@@ -1,11 +1,11 @@
 package comso.Team5.GP.users.service;
 
+import comso.Team5.GP.global.exception.users.UserException;
+import comso.Team5.GP.global.exception.users.UserExceptionCode;
 import comso.Team5.GP.users.dto.request.UserLoginRequest;
 import comso.Team5.GP.users.dto.response.UserMeResponse;
 import comso.Team5.GP.users.dto.response.UserLoginResponse;
 import comso.Team5.GP.users.entity.Users;
-import comso.Team5.GP.users.exception.UserException;
-import comso.Team5.GP.users.exception.UserExceptionCode;
 import comso.Team5.GP.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import comso.Team5.GP.util.jwt.JwtUtil;
@@ -41,7 +41,7 @@ public class UserService{
         }
 
         // 유저 로그인 정보 조회
-        Users users = userRepository.findById(loginRequest.getId())
+        Users users = userRepository.findByCheckId(loginRequest.getId())
                 .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "아이디 혹은 비밀번호가 올바르지 않습니다."));
 
         // 유저 비밀번호 검증
@@ -50,7 +50,7 @@ public class UserService{
         }
 
         // 토큰 발급
-        String accessToken = jwtUtil.generateToken(users.getUserId(), users.getId());
+        String accessToken = jwtUtil.generateToken(users.getId());
 
         return new UserLoginResponse(accessToken, "Bearer", jwtUtil.getExpirationSeconds());
     }

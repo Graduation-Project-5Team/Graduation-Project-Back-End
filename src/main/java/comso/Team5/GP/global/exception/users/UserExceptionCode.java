@@ -1,4 +1,4 @@
-package comso.Team5.GP.users.exception;
+package comso.Team5.GP.global.exception.users;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

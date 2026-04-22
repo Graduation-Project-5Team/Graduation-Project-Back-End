@@ -5,7 +5,6 @@ import comso.Team5.GP.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity

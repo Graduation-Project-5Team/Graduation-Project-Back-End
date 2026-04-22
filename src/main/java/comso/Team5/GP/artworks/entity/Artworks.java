@@ -4,8 +4,6 @@ import comso.Team5.GP.exhibitions.entity.Exhibitions;
 import comso.Team5.GP.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.*;
-import org.h2.engine.User;
-import org.w3c.dom.Text;
 
 import java.time.LocalDate;
 
