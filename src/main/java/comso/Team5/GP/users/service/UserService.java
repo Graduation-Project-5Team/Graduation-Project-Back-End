@@ -2,6 +2,7 @@ package comso.Team5.GP.users.service;
 
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
+import comso.Team5.GP.users.entity.Role;
 import comso.Team5.GP.users.dto.request.UserLoginRequest;
 import comso.Team5.GP.users.dto.response.UserMeResponse;
 import comso.Team5.GP.users.dto.response.UserLoginResponse;
@@ -76,9 +77,9 @@ public class UserService{
         }
 
         // 학생 여부 판단
-        String role = dto.getEmail().endsWith(STUDENT_EMAIL_DOMAIN)
-                ? "ROLE_STUDENT"
-                : "ROLE_USER";
+        Role role = dto.getEmail().endsWith(STUDENT_EMAIL_DOMAIN)
+                ? Role.STUDENT
+                : Role.USER;
 
         // [MVP] 비밀번호 암호화 없이 그대로 저장 (나중에 PasswordEncoder 추가 필요)
         Users user = Users.builder()
@@ -99,6 +100,6 @@ public class UserService{
         Users user = userRepository.findByCheckId(id).orElseThrow(
                 () -> new UserException(UserExceptionCode.USER_NOT_FOUND));
 
-        return new UserMeResponse(user.getId(), user.getNickname(), user.getRole(), user.getEmail());
+        return new UserMeResponse(user.getId(), user.getNickname(), user.getRole().name(), user.getEmail());
     }
 }

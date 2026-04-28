@@ -2,6 +2,7 @@ package comso.Team5.GP.artworks.service;
 
 import comso.Team5.GP.artworks.dto.request.ArtworkCreateRequest;
 import comso.Team5.GP.artworks.dto.response.ArtworkCreateResponse;
+import java.time.LocalDateTime;
 import comso.Team5.GP.artworks.entity.Artworks;
 import comso.Team5.GP.artworks.repository.ArtworkRepository;
 import comso.Team5.GP.exhibitions.entity.Exhibitions;
@@ -34,12 +35,14 @@ public class ArtworkService {
         Users user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
 
-        Artworks artwork = Artworks.builder().title(request.getTitle())
+        Artworks artwork = Artworks.builder()
                 .exhibitions(exhibitions)
                 .users(user)
                 .title(request.getTitle())
                 .description(request.getDescription())
-                .likeCount(request.getLikeCount())
+                .likeCount(0)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         Artworks save = artworkRepository.save(artwork);

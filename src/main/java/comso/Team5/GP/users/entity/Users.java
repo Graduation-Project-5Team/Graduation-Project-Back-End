@@ -32,14 +32,15 @@ public class Users {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, unique = true) // 같은 이메일 중복 가입 방지를 위한 unique 제약조건 추가
+    @Column(nullable = false, unique = true, length = 30) // 같은 이메일 중복 가입 방지를 위한 unique 제약조건 추가
     private String email;
 
-    @Column
+    @Column(length = 50)
     private String nickname;
 
+    @Enumerated(EnumType.STRING)
     @Column
-    private String role;
+    private Role role;
 
     // 학과 테이블과 조인 (N : 1)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,7 +51,7 @@ public class Users {
     private boolean isVerified;
 
     @CreationTimestamp
-    @Column(name = "create_at", nullable = false, updatable = false) // 생성 시점 자동 기록, 이후 수정 불가
+    @Column(name = "created_at", nullable = false, updatable = false) // 생성 시점 자동 기록, 이후 수정 불가
     private LocalDateTime createAt;
 
 
