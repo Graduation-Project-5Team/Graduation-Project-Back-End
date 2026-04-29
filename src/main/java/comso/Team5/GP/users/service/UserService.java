@@ -1,11 +1,12 @@
 package comso.Team5.GP.users.service;
 
+import comso.Team5.GP.global.exception.users.UserException;
+import comso.Team5.GP.global.exception.users.UserExceptionCode;
+import comso.Team5.GP.users.entity.Role;
 import comso.Team5.GP.users.dto.request.UserLoginRequest;
 import comso.Team5.GP.users.dto.response.UserMeResponse;
 import comso.Team5.GP.users.dto.response.UserLoginResponse;
 import comso.Team5.GP.users.entity.Users;
-import comso.Team5.GP.users.exception.UserException;
-import comso.Team5.GP.users.exception.UserExceptionCode;
 import comso.Team5.GP.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import comso.Team5.GP.util.jwt.JwtUtil;
@@ -41,7 +42,7 @@ public class UserService{
         }
 
         // 유저 로그인 정보 조회
-        Users users = userRepository.findById(loginRequest.getId())
+        Users users = userRepository.findByCheckId(loginRequest.getId())
                 .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "아이디 혹은 비밀번호가 올바르지 않습니다."));
 
         // 유저 비밀번호 검증
@@ -50,7 +51,7 @@ public class UserService{
         }
 
         // 토큰 발급
-        String accessToken = jwtUtil.generateToken(users.getUserId(), users.getId());
+        String accessToken = jwtUtil.generateToken(users.getId());
 
         return new UserLoginResponse(accessToken, "Bearer", jwtUtil.getExpirationSeconds());
     }
@@ -76,9 +77,9 @@ public class UserService{
         }
 
         // 학생 여부 판단
-        String role = dto.getEmail().endsWith(STUDENT_EMAIL_DOMAIN)
-                ? "ROLE_STUDENT"
-                : "ROLE_USER";
+        Role role = dto.getEmail().endsWith(STUDENT_EMAIL_DOMAIN)
+                ? Role.STUDENT
+                : Role.USER;
 
         // [MVP] 비밀번호 암호화 없이 그대로 저장 (나중에 PasswordEncoder 추가 필요)
         Users user = Users.builder()
@@ -99,6 +100,6 @@ public class UserService{
         Users user = userRepository.findByCheckId(id).orElseThrow(
                 () -> new UserException(UserExceptionCode.USER_NOT_FOUND));
 
-        return new UserMeResponse(user.getId(), user.getNickname(), user.getRole(), user.getEmail());
+        return new UserMeResponse(user.getId(), user.getNickname(), user.getRole().name(), user.getEmail());
     }
 }

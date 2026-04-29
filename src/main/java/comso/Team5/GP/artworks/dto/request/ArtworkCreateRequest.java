@@ -1,10 +1,10 @@
 package comso.Team5.GP.artworks.dto.request;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @Getter
+@NoArgsConstructor
 public class ArtworkCreateRequest {
     private Long userId;
 
@@ -13,6 +13,4 @@ public class ArtworkCreateRequest {
     private String title;
 
     private String description;
-
-    private int likeCount;
 }
