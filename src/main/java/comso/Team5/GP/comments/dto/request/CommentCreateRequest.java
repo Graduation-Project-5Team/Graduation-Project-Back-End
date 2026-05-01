@@ -1,6 +1,5 @@
 package comso.Team5.GP.comments.dto.request;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter

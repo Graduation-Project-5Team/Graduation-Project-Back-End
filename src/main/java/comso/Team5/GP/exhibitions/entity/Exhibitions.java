@@ -26,6 +26,7 @@ public class Exhibitions {
     @JoinColumn(name = "dept_id", referencedColumnName = "dept_id")
     private Departments departments;
 
+    @Column(length = 100)
     private String name;
 
     @Column(columnDefinition = "TEXT")

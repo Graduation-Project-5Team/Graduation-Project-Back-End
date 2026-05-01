@@ -5,9 +5,9 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import comso.Team5.GP.users.exception.UserException;
-import comso.Team5.GP.users.exception.UserExceptionCode;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import comso.Team5.GP.global.exception.users.UserException;
+import comso.Team5.GP.global.exception.users.UserExceptionCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +32,7 @@ public class JwtUtil {
     @Value("${jwt.issuer:GP}")
     private String ISSUER;
 
-    public String generateToken(Long userId, String id) {
+    public String generateToken(String id) {
         Instant now = Instant.now();
         long issuedAt = now.getEpochSecond();
         long expiresAt = now.plusMillis(ACCESS_EXPIRATION).getEpochSecond();
@@ -41,7 +41,7 @@ public class JwtUtil {
 
         String escapedUserId = escapeJson(id);
         String payloadJson = "{\"sub\":\""+ escapedUserId + "\""
-                + ",\"id\":" + userId
+                + ",\"id\":\""+ id + "\""
                 + ",\"iss\":\"" + ISSUER + "\""
                 + ",\"iat\":" + issuedAt
                 + ",\"exp\":" + expiresAt

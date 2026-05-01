@@ -1,12 +1,11 @@
 package comso.Team5.GP.artworks.controller;
 
 import comso.Team5.GP.artworks.dto.request.ArtworkCreateRequest;
-import comso.Team5.GP.artworks.dto.request.ArtworkUpdateRequest;
 import comso.Team5.GP.artworks.dto.response.ArtworkCreateResponse;
 import comso.Team5.GP.artworks.dto.response.ArtworkResponse;
 import comso.Team5.GP.artworks.service.ArtworkService;
-import comso.Team5.GP.users.exception.UserException;
-import comso.Team5.GP.users.exception.UserExceptionCode;
+import comso.Team5.GP.global.exception.users.UserException;
+import comso.Team5.GP.global.exception.users.UserExceptionCode;
 import comso.Team5.GP.util.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -49,31 +48,6 @@ public class ArtworkController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(artworkService.create(request, principal.userId()));
-    }
-
-    // 작품 수정 (인증 필요 - 본인)
-    @PatchMapping("/{artworkId}")
-    public ResponseEntity<ArtworkResponse> update(
-            @PathVariable Long artworkId,
-            @RequestBody ArtworkUpdateRequest request,
-            HttpServletRequest httpRequest) {
-
-        JwtUtil.JwtPrincipal principal = extractPrincipal(httpRequest);
-
-        return ResponseEntity.ok(artworkService.update(artworkId, request, principal.userId()));
-    }
-
-    // 작품 삭제 (인증 필요 - 본인)
-    @DeleteMapping("/{artworkId}")
-    public ResponseEntity<Void> delete(
-            @PathVariable Long artworkId,
-            HttpServletRequest httpRequest) {
-
-        JwtUtil.JwtPrincipal principal = extractPrincipal(httpRequest);
-
-        artworkService.delete(artworkId, principal.userId());
-
-        return ResponseEntity.noContent().build();
     }
 
     // Authorization 헤더에서 JWT 토큰을 추출하고 principal 반환

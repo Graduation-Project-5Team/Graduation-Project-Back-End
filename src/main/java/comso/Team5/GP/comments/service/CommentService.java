@@ -7,6 +7,10 @@ import comso.Team5.GP.comments.dto.response.CommentCreateResponse;
 import comso.Team5.GP.comments.dto.response.CommentResponse;
 import comso.Team5.GP.comments.entity.Comments;
 import comso.Team5.GP.comments.repository.CommentRepository;
+import comso.Team5.GP.global.exception.artworks.ArtworkException;
+import comso.Team5.GP.global.exception.artworks.ArtworkExceptionCode;
+import comso.Team5.GP.global.exception.users.UserException;
+import comso.Team5.GP.global.exception.users.UserExceptionCode;
 import comso.Team5.GP.users.entity.Users;
 import comso.Team5.GP.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +34,10 @@ public class CommentService {
     public CommentCreateResponse create(CommentCreateRequest request){
 
         Users user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+                .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
 
         Artworks artwork = artworkRepository.findById(request.getArtworkId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 작품이 존재하지 않습니다. 존재하지 않는 작품 ID : " + request.getArtworkId()));
+                .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
 
         Comments comment = Comments.builder()
                 .artwork(artwork)

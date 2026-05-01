@@ -1,7 +1,7 @@
 INSERT INTO departments (name) VALUES ('컴퓨터 소프트웨어학과');
 
 INSERT INTO Users
-    (id, email, nickname, password, role, dept_id, is_verified, create_at)
+    (id, email, nickname, password, role, dept_id, is_verified, created_at)
 VALUES
     ('admin', 'admin@admin.com', '관리자', 'admin123', 'ADMIN', 1, true, CURRENT_TIMESTAMP);
 
