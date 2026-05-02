@@ -4,6 +4,7 @@ import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
 import comso.Team5.GP.users.dto.request.TokenReissueRequest;
 import comso.Team5.GP.users.dto.request.UserLoginRequest;
+import comso.Team5.GP.users.dto.response.TokenReissueRefreshResponse;
 import comso.Team5.GP.users.dto.response.UserLoginResponse;
 import comso.Team5.GP.users.dto.response.UserMeResponse;
 import comso.Team5.GP.users.service.RefreshTokenService;
@@ -29,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<UserLoginResponse> reissueToken(HttpServletRequest request) {
+    public ResponseEntity<TokenReissueRefreshResponse> reissueToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new UserException(UserExceptionCode.AUTH_HEADER_MISSING);
@@ -38,7 +39,7 @@ public class UserController {
         String token = authHeader.substring(7);
         TokenReissueRequest reissueRequest = new TokenReissueRequest(token);
 
-        UserLoginResponse response = refreshTokenService.reissueTokens(reissueRequest.getRefreshToken());
+        TokenReissueRefreshResponse response = refreshTokenService.reissueTokens(reissueRequest.getRefreshToken());
         return ResponseEntity.ok(response);
     }
 

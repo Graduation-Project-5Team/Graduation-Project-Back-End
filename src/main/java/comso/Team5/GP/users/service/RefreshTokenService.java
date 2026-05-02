@@ -2,7 +2,7 @@ package comso.Team5.GP.users.service;
 
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
-import comso.Team5.GP.users.dto.response.UserLoginResponse;
+import comso.Team5.GP.users.dto.response.TokenReissueRefreshResponse;
 import comso.Team5.GP.users.entity.Users;
 import comso.Team5.GP.users.repository.UserRepository;
 import comso.Team5.GP.util.jwt.JwtUtil;
@@ -26,7 +26,7 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public UserLoginResponse reissueTokens(String refreshToken) {
+    public TokenReissueRefreshResponse reissueTokens(String refreshToken) {
         // 1. 리프레시 토큰 유효성 검사
         jwtUtil.validate(refreshToken);
 
@@ -53,7 +53,7 @@ public class RefreshTokenService {
         userRepository.save(user);
 
         // 7. 새로운 토큰 반환
-        return new UserLoginResponse(
+        return new TokenReissueRefreshResponse(
                 newAccessToken,
                 "Bearer",
                 jwtUtil.getExpirationSeconds(),

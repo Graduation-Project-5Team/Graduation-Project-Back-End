@@ -9,7 +9,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TokenReissueRefresh {
+public class TokenReissueRefreshResponse {
     private String accessToken;
+
+    private String tokenType;
+
+    private long expiresInSeconds;
+
     private String refreshToken;
+
+    private String refreshTokenType;
+
+    private long refreshExpiresInSecends;
 }
