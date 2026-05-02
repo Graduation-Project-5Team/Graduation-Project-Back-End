@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Service
 public class ExhibitionService {
@@ -19,6 +22,7 @@ public class ExhibitionService {
     private final ExhibitionRepository exhibitionsRepository;
     private final DepartmentRepository departmentsRepository;
 
+    // 전시 등록
     @Transactional
     public ExhibitionCreateResponse create(ExhibitionCreateRequest request) {
         Departments department = departmentsRepository.findById(request.getDepartmentId())
@@ -34,10 +38,39 @@ public class ExhibitionService {
 
         Exhibitions savedExhibition = exhibitionsRepository.save(exhibition);
 
-        ExhibitionCreateResponse response = new ExhibitionCreateResponse(savedExhibition.getExhiId(),
-                savedExhibition.getName(), savedExhibition.getDescription(), savedExhibition.getStartDate(),
-                savedExhibition.getEndDate(), savedExhibition.getDepartments().getDeptId());
+        return toResponse(savedExhibition);
+    }
 
-        return response;
+    // 전시 단건 조회
+    @Transactional(readOnly = true)
+    public ExhibitionCreateResponse getExhibition(Long exhiId) {
+
+        Exhibitions exhibition = exhibitionsRepository.findById(exhiId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 전시가 존재하지 않습니다. 전시 ID : " + exhiId));
+
+        return toResponse(exhibition);
+    }
+
+    // 전체 전시 목록 조회
+    @Transactional(readOnly = true)
+    public List<ExhibitionCreateResponse> getAllExhibitions() {
+
+        List<Exhibitions> exhibitions = exhibitionsRepository.findAll();
+
+        return exhibitions.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    // Exhibitions 엔티티를 ExhibitionCreateResponse DTO로 변환
+    private ExhibitionCreateResponse toResponse(Exhibitions exhibition) {
+        return new ExhibitionCreateResponse(
+                exhibition.getExhiId(),
+                exhibition.getName(),
+                exhibition.getDescription(),
+                exhibition.getStartDate(),
+                exhibition.getEndDate(),
+                exhibition.getDepartments().getDeptId()
+        );
     }
 }

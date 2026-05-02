@@ -35,8 +35,7 @@ public class JwtUtil {
     @Value("${jwt.issuer:GP}")
     private String ISSUER;
 
-    public String generateAccess(Long userId, String id) {
-
+    public String generateToken(String id) {
         Instant now = Instant.now();
         long issuedAt = now.getEpochSecond();
         long expiresAt = now.plusMillis(ACCESS_EXPIRATION).getEpochSecond();
