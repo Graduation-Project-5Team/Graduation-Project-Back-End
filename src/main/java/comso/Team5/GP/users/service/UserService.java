@@ -32,7 +32,8 @@ public class UserService{
     private static final String STUDENT_EMAIL_DOMAIN = "@gsuite.induk.ac.kr";
 
 
-    ///  로그인
+    //  로그인
+    @Transactional
     public UserLoginResponse login(UserLoginRequest loginRequest){
 
         // 유저 로그인 정보 검증
@@ -51,9 +52,13 @@ public class UserService{
         }
 
         // 토큰 발급
-        String accessToken = jwtUtil.generateToken(users.getId());
+        String accessToken = jwtUtil.generateAccess(users.getUserId(), users.getId());
+        String refreshToken = jwtUtil.generateRefresh(users.getUserId());
 
-        return new UserLoginResponse(accessToken, "Bearer", jwtUtil.getExpirationSeconds());
+        // 메서드를 통해 발급한 리프레시 토큰을 db에 저장
+        users.updatedRefreshToken(refreshToken);
+
+        return new UserLoginResponse(accessToken, refreshToken);
     }
 
 
@@ -92,6 +97,17 @@ public class UserService{
                 .build();
 
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void logout(Long userId) {
+
+        // 유저 정보 조회
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        // 리프레시 토큰 무효화
+        user.updatedRefreshToken(null);
     }
 
 

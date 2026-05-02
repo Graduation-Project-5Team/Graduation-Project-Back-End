@@ -74,12 +74,12 @@ jwt:
   access:
     # 액세스 토큰 만료시간 1시간 : 1000(ms -> s) * 60 (s -> m) * 60(m -> h)
     expiration: 3600000
-    header: Authorization # Authorization : Bearer <accesToken>
+    header: Authorization
 
   refresh:
-    # RefreshToken 지속시간 : 1주
+    # 리프레시 토큰 만료시간 1주
     expiration: 604800000
-    header: Refresh-Token # Refresh-Token :
+    header: Refresh-Token
 server:
   port: 8080
 

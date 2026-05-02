@@ -47,13 +47,23 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    // logout
     @GetMapping("/logout")
     public ResponseEntity<String> UserLogout(HttpServletRequest request) {
+        // 리프레시 토큰 헤더
         String authUser = request.getHeader("Authorization");
 
         if (authUser == null || !authUser.startsWith("Bearer ")) {
             throw new UserException(UserExceptionCode.AUTH_HEADER_MISSING);
         }
+
+        String token = authUser.substring(7);
+
+        // UserId, id를 가져옴
+        JwtUtil.JwtPrincipal principal = jwtUtil.getPrincipalFromToken(token);
+
+        userService.logout(principal.userId());
+
 
         return ResponseEntity.ok("로그아웃이 성공적으로 처리되었습니다.");
     }

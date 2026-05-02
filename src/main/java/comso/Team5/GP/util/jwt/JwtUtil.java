@@ -29,12 +29,14 @@ public class JwtUtil {
     @Value("${jwt.access.expiration}")
     private long ACCESS_EXPIRATION;
 
-
+    @Value("${jwt.refresh.expiration}")
+    private long REFRESH_EXPIRATION;
 
     @Value("${jwt.issuer:GP}")
     private String ISSUER;
 
-    public String generateToken(String id) {
+    public String generateAccess(Long userId, String id) {
+
         Instant now = Instant.now();
         long issuedAt = now.getEpochSecond();
         long expiresAt = now.plusMillis(ACCESS_EXPIRATION).getEpochSecond();
@@ -43,7 +45,7 @@ public class JwtUtil {
 
         String escapedUserId = escapeJson(id);
         String payloadJson = "{\"sub\":\""+ escapedUserId + "\""
-                + ",\"id\":" + id
+                + ",\"id\":\"" + id + "\""
                 + ",\"iss\":\"" + ISSUER + "\""
                 + ",\"iat\":" + issuedAt
                 + ",\"exp\":" + expiresAt
@@ -55,7 +57,27 @@ public class JwtUtil {
         String signature = sign(content);
 
         return content + "." + signature;
+    }
 
+    public String generateRefresh(Long userId) {
+        Instant now = Instant.now();
+        long issuedAt = now.getEpochSecond();
+        long expiresAt = now.plusMillis(REFRESH_EXPIRATION).getEpochSecond();
+
+        String headerJson = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
+;
+        String payloadJson = "{\"id\":\"" + userId + "\""
+                + ",\"iss\":\"" + ISSUER + "\""
+                + ",\"iat\":" + issuedAt
+                + ",\"exp\":" + expiresAt
+                +"}";
+
+        String encodeHeader = encodeBase64Url(headerJson);
+        String encodePayload = encodeBase64Url(payloadJson);
+        String content = encodeHeader + "." + encodePayload;
+        String signature = sign(content);
+
+        return content + "." + signature;
     }
 
     // 토큰 만료 시간이 얼마나 오래 유효한지 표시할 때 사용하는 값에 대한 메서드
@@ -106,6 +128,18 @@ public class JwtUtil {
             throw new UserException(UserExceptionCode.INVALID_TOKEN);
         }
         return new JwtPrincipal(idClaim.asLong(), subject);
+    }
+
+    /**
+     * 리프레시 토큰에서 userId(PK)를 추출합니다.
+     */
+    public Long getUserIdFromRefreshToken(String token) {
+        DecodedJWT decodedJWT = verifyToken(token);
+        var idClaim = decodedJWT.getClaim("id");
+        if (idClaim.isNull()) {
+            throw new UserException(UserExceptionCode.INVALID_TOKEN);
+        }
+        return idClaim.asLong();
     }
 
     private DecodedJWT verifyToken(String token) {

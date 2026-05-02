@@ -42,6 +42,18 @@ public class Users {
     @Column
     private Role role;
 
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
     // 학과 테이블과 조인 (N : 1)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dept_id", referencedColumnName = "dept_id")
@@ -58,6 +70,11 @@ public class Users {
     // @Setter 제거(직접 구현) -> 이메일 인증 완료 시 호출하는 메서드
     public void markAsVerified() {
         this.isVerified = true;
+    }
+
+    // 보안성을 위해 리프레시 토큰도 재발급하는 메서드
+    public void updatedRefreshToken(String refreshToken){
+        this.refreshToken = refreshToken;
     }
 
 }
