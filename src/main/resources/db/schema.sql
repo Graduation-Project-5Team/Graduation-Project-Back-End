@@ -1,8 +1,6 @@
 INSERT INTO departments (name) VALUES ('컴퓨터 소프트웨어학과');
 
-INSERT INTO Users
-(id, email, nickname, password, role, dept_id, is_verified, created_at)
-VALUES
+INSERT INTO Users VALUES
     ('admin', 'admin@admin.com', '관리자', 'admin123', 'ADMIN', 1, true, CURRENT_TIMESTAMP);
 
 -- (이메일)테이블 추가

@@ -9,9 +9,7 @@ public class UserLoginResponse {
 
     private String accessToken;
 
-    private String tokenType;
-
-    private long expiresInSeconds;
+    private String refreshToken;
 
     private String refreshToken;
 

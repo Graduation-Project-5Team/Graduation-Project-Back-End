@@ -2,6 +2,11 @@ package comso.Team5.GP.artworks.service;
 
 import comso.Team5.GP.artworks.dto.request.ArtworkCreateRequest;
 import comso.Team5.GP.artworks.dto.response.ArtworkCreateResponse;
+import comso.Team5.GP.artworks.dto.response.ArtworkResponse;
+import comso.Team5.GP.global.exception.artworks.ArtworkException;
+import comso.Team5.GP.global.exception.artworks.ArtworkExceptionCode;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import comso.Team5.GP.artworks.entity.Artworks;
 import comso.Team5.GP.artworks.repository.ArtworkRepository;
@@ -26,13 +31,28 @@ public class ArtworkService {
     private final ExhibitionRepository exhibitionRepository;
     private final UserRepository userRepository;
 
+    // 작품 목록 조회 (페이지네이션)
+    @Transactional(readOnly = true)
+    public Page<ArtworkResponse> getArtworks(Pageable pageable) {
+        return artworkRepository.findAll(pageable).map(this::toResponse);
+    }
+
+    // 작품 단건 조회
+    @Transactional(readOnly = true)
+    public ArtworkResponse getArtwork(Long artworkId) {
+        Artworks artwork = artworkRepository.findById(artworkId)
+                .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
+        return toResponse(artwork);
+    }
+
+    // 작품 등록
     @Transactional
-    public ArtworkCreateResponse create(ArtworkCreateRequest request) {
+    public ArtworkCreateResponse create(ArtworkCreateRequest request, Long userId) {
 
         Exhibitions exhibitions = exhibitionRepository.findById(request.getExhiId())
                 .orElseThrow(() -> new ExhibitionException(ExhibitionExceptionCode.NOT_FOUND_EXHIBITION));
 
-        Users user = userRepository.findById(request.getUserId())
+        Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
 
         Artworks artwork = Artworks.builder()
@@ -47,8 +67,19 @@ public class ArtworkService {
 
         Artworks save = artworkRepository.save(artwork);
 
-        ArtworkCreateResponse response = new ArtworkCreateResponse(save.getArtworkId());
+        return new ArtworkCreateResponse(save.getArtworkId());
+    }
 
-        return response;
+    private ArtworkResponse toResponse(Artworks artwork) {
+        return new ArtworkResponse(
+                artwork.getArtworkId(),
+                artwork.getUsers().getUserId(),
+                artwork.getExhibitions() != null ? artwork.getExhibitions().getExhiId() : null,
+                artwork.getTitle(),
+                artwork.getDescription(),
+                artwork.getLikeCount(),
+                artwork.getCreatedAt(),
+                artwork.getUpdatedAt()
+        );
     }
 }
