@@ -45,15 +45,6 @@ public class Users {
     @Column(name = "refresh_token")
     private String refreshToken;
 
-    @Column(name = "refresh_token")
-    private String refreshToken;
-
-    @Column(name = "refresh_token")
-    private String refreshToken;
-
-    @Column(name = "refresh_token")
-    private String refreshToken;
-
     // 학과 테이블과 조인 (N : 1)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dept_id", referencedColumnName = "dept_id")
