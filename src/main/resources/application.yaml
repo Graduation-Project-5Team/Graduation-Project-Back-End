@@ -37,6 +37,7 @@ spring:
     init:
       mode: always
       schema-locations: classpath:db/schema.sql
+      encoding: UTF-8
 
   # Spring Mail 설정 추가 (Gmail 기준)
   mail:

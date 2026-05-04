@@ -10,6 +10,7 @@ public enum UserExceptionCode {
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     AUTH_HEADER_MISSING(HttpStatus.UNAUTHORIZED, "Authorization Bearer 토큰이 필요합니다."),
+    REFRESH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "유효하지 않거나 만료된 리프레시 토큰입니다. 다시 로그인해주세요.");
     REFRESH_TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "Refresh-Token 헤더가 필요합니다.");
 
     private final HttpStatus httpStatus;

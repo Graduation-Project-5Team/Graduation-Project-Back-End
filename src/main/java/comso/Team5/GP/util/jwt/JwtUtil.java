@@ -35,16 +35,17 @@ public class JwtUtil {
     @Value("${jwt.issuer:GP}")
     private String ISSUER;
 
-    public String generateToken(String id) {
+    public String generateAccess(Long userId, String id) {
+
         Instant now = Instant.now();
         long issuedAt = now.getEpochSecond();
         long expiresAt = now.plusMillis(ACCESS_EXPIRATION).getEpochSecond();
 
         String headerJson = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
 
-        String escapedUserId = escapeJson(id);
-        String payloadJson = "{\"sub\":\""+ escapedUserId + "\""
-                + ",\"id\":\"" + id + "\""
+        String escapedId = escapeJson(id);
+        String payloadJson = "{\"sub\":\""+ escapedId + "\""
+                + ",\"id\":" + userId
                 + ",\"iss\":\"" + ISSUER + "\""
                 + ",\"iat\":" + issuedAt
                 + ",\"exp\":" + expiresAt
@@ -58,14 +59,16 @@ public class JwtUtil {
         return content + "." + signature;
     }
 
-    public String generateRefresh(Long userId) {
+    public String generateRefresh(Long userId, String id) {
         Instant now = Instant.now();
         long issuedAt = now.getEpochSecond();
         long expiresAt = now.plusMillis(REFRESH_EXPIRATION).getEpochSecond();
 
         String headerJson = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
-;
-        String payloadJson = "{\"id\":\"" + userId + "\""
+
+        String escapedId = escapeJson(id);
+        String payloadJson = "{\"sub\":\"" + escapedId + "\""
+                + ",\"id\":" + userId
                 + ",\"iss\":\"" + ISSUER + "\""
                 + ",\"iat\":" + issuedAt
                 + ",\"exp\":" + expiresAt
@@ -83,6 +86,10 @@ public class JwtUtil {
     public long getExpirationSeconds() {
         // 토큰 만료시간이 얼마나 오래 유효한지 표시할 때 사용하는 값
         return ACCESS_EXPIRATION / 1000;
+    }
+
+    public long getRefreshExpirationsSeconds() {
+        return REFRESH_EXPIRATION / 1000;
     }
 
     // base64Url 인코딩 메서드
@@ -157,8 +164,7 @@ public class JwtUtil {
         }
     }
 
-    // 토큰 검증 후 UserId와 id를 반환하는 객체
-    public record JwtPrincipal(Long userId, String id) {
+    public void validate(String token){
+        verifyToken(token);
     }
-
 }

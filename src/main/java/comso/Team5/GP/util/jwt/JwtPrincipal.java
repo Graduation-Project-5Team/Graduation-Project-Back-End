@@ -1,4 +1,7 @@
 package comso.Team5.GP.util.jwt;
 
-public record JwtPrincipal() {
+// JwtUtil에 Principal 생성자를 분리
+public record JwtPrincipal(
+        Long userId,
+        String id) {
 }
