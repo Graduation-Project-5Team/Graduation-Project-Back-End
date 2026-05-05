@@ -1,10 +1,12 @@
 package comso.Team5.GP.departments.dto.request;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
+@Setter
+@NoArgsConstructor
 public class DepartmentCreateRequest {
 
     private String name;
