@@ -15,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @RequestMapping("/api/comments")
 @RestController
@@ -24,12 +22,6 @@ public class CommentController {
 
     private final CommentService commentService;
     private final JwtUtil jwtUtil;
-
-    // 작품 ID로 댓글 목록 조회 (인증 불필요)
-    @GetMapping("/artwork/{artworkId}")
-    public ResponseEntity<List<CommentResponse>> getCommentsByArtwork(@PathVariable Long artworkId) {
-        return ResponseEntity.ok(commentService.getCommentsByArtwork(artworkId));
-    }
 
     // 댓글 등록 (인증 필요)
     @PostMapping
