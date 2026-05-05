@@ -6,6 +6,7 @@ import comso.Team5.GP.artworks.dto.response.ArtworkResponse;
 import comso.Team5.GP.artworks.service.ArtworkService;
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
+import comso.Team5.GP.util.jwt.JwtPrincipal;
 import comso.Team5.GP.util.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -44,14 +45,14 @@ public class ArtworkController {
             @RequestBody ArtworkCreateRequest request,
             HttpServletRequest httpRequest) {
 
-        JwtUtil.JwtPrincipal principal = extractPrincipal(httpRequest);
+        JwtPrincipal principal = extractPrincipal(httpRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(artworkService.create(request, principal.userId()));
     }
 
     // Authorization 헤더에서 JWT 토큰을 추출하고 principal 반환
-    private JwtUtil.JwtPrincipal extractPrincipal(HttpServletRequest request) {
+    private JwtPrincipal extractPrincipal(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
