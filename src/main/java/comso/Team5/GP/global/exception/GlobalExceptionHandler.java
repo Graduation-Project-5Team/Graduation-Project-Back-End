@@ -1,5 +1,7 @@
 package comso.Team5.GP.global.exception;
 
+import comso.Team5.GP.global.exception.artworks.ArtworkException;
+import comso.Team5.GP.global.exception.comments.CommentException;
 import comso.Team5.GP.global.exception.exhibitions.ExhibitionException;
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.users.dto.response.ErrorResponse;
@@ -9,6 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ArtworkException.class)
+    public ResponseEntity<ErrorResponse> handleArtworkException(ArtworkException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getHttpStatus())
+                .body(new ErrorResponse(e.getErrorCode().name(), e.getMessage()));
+    }
 
     @ExceptionHandler(UserException.class)
     public ResponseEntity<ErrorResponse> handleUserException(UserException e) {

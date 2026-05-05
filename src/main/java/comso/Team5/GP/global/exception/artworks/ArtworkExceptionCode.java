@@ -6,8 +6,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ArtworkExceptionCode {
 
-    // Domain
-    NOT_FOUND_ARTWORK(HttpStatus.NOT_FOUND,"해당 작품이 존재하지 않습니다.");
+    NOT_FOUND_ARTWORK(HttpStatus.NOT_FOUND, "해당 작품이 존재하지 않습니다."),
+    FORBIDDEN_ARTWORK(HttpStatus.FORBIDDEN, "해당 작품에 대한 권한이 없습니다."),
+    NOT_STUDENT(HttpStatus.FORBIDDEN, "학생만 작품을 등록할 수 있습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

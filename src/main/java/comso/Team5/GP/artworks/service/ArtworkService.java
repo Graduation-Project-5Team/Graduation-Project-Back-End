@@ -1,8 +1,10 @@
 package comso.Team5.GP.artworks.service;
 
 import comso.Team5.GP.artworks.dto.request.ArtworkCreateRequest;
+import comso.Team5.GP.artworks.dto.request.ArtworkUpdateRequest;
 import comso.Team5.GP.artworks.dto.response.ArtworkCreateResponse;
 import comso.Team5.GP.artworks.dto.response.ArtworkResponse;
+import comso.Team5.GP.users.entity.Role;
 import comso.Team5.GP.global.exception.artworks.ArtworkException;
 import comso.Team5.GP.global.exception.artworks.ArtworkExceptionCode;
 import org.springframework.data.domain.Page;
@@ -55,6 +57,10 @@ public class ArtworkService {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
 
+        if (user.getRole() != Role.STUDENT) {
+            throw new ArtworkException(ArtworkExceptionCode.NOT_STUDENT);
+        }
+
         Artworks artwork = Artworks.builder()
                 .exhibitions(exhibitions)
                 .users(user)
@@ -68,6 +74,34 @@ public class ArtworkService {
         Artworks save = artworkRepository.save(artwork);
 
         return new ArtworkCreateResponse(save.getArtworkId());
+    }
+
+    // 작품 수정 (본인만 가능)
+    public ArtworkResponse update(Long artworkId, ArtworkUpdateRequest request, Long userId) {
+        Artworks artwork = artworkRepository.findById(artworkId)
+                .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
+
+        if (!artwork.getUsers().getUserId().equals(userId)) {
+            throw new ArtworkException(ArtworkExceptionCode.FORBIDDEN_ARTWORK);
+        }
+
+        if (request.getTitle() != null) artwork.setTitle(request.getTitle());
+        if (request.getDescription() != null) artwork.setDescription(request.getDescription());
+        artwork.setUpdatedAt(LocalDateTime.now());
+
+        return toResponse(artwork);
+    }
+
+    // 작품 삭제 (본인만 가능)
+    public void delete(Long artworkId, Long userId) {
+        Artworks artwork = artworkRepository.findById(artworkId)
+                .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
+
+        if (!artwork.getUsers().getUserId().equals(userId)) {
+            throw new ArtworkException(ArtworkExceptionCode.FORBIDDEN_ARTWORK);
+        }
+
+        artworkRepository.delete(artwork);
     }
 
     private ArtworkResponse toResponse(Artworks artwork) {
