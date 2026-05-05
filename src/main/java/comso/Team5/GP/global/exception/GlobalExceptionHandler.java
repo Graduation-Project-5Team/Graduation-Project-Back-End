@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(e.getErrorCode().name(), e.getMessage()));
     }
 
-    // 전시 관련 예외 (전시 없음)
+    // 전시 관련 예외 (전시 없음, 관리자 아님)
     @ExceptionHandler(ExhibitionException.class)
     public ResponseEntity<ErrorResponse> handleExhibitionException(ExhibitionException e) {
         return ResponseEntity
