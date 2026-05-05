@@ -19,6 +19,14 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(e.getErrorCode().name(), e.getMessage()));
     }
 
+    @ExceptionHandler(CommentException.class)
+    public ResponseEntity<ErrorResponse> handleCommentException(CommentException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getHttpStatus())
+                .body(new ErrorResponse(e.getErrorCode().name(), e.getMessage()));
+    }
+
+
     @ExceptionHandler(UserException.class)
     public ResponseEntity<ErrorResponse> handleUserException(UserException e) {
         return ResponseEntity
