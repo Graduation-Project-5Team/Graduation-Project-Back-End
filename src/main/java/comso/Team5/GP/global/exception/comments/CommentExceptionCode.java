@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum CommentExceptionCode {
 
-    // Domain
-    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND,"해당 댓글이 존재하지 않습니다.");
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "해당 댓글이 존재하지 않습니다."),
+    FORBIDDEN_COMMENT(HttpStatus.FORBIDDEN, "해당 댓글에 대한 권한이 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

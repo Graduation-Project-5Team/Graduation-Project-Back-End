@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DepartmentCreateRequest {
+public class DepartmentUpdateRequest {
 
     private String name;
 }

@@ -9,12 +9,11 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ExhibitionCreateRequest {
+public class ExhibitionUpdateRequest {
+
     private String name;
 
     private String description;
-
-    // TODO private String thumbnailImage;
 
     private LocalDate startDate;
 

@@ -1,4 +1,4 @@
-package comso.Team5.GP.departments.dto.request;
+package comso.Team5.GP.comments.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DepartmentCreateRequest {
+public class CommentUpdateRequest {
 
-    private String name;
+    private String content;
 }
