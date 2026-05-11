@@ -68,4 +68,15 @@ public class Users {
         this.refreshToken = refreshToken;
     }
 
+
+    // 닉네임 변경하는 메서드
+    public void updateUserNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    // 패스워드 변경하는 메서드
+    public void updateUserPassword(String password) {
+        this.password = password;
+    }
+
 }

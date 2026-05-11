@@ -2,7 +2,9 @@ package comso.Team5.GP.users.service;
 
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
+import comso.Team5.GP.users.dto.request.UserMePasswordUpdateRequest;
 import comso.Team5.GP.users.dto.response.UserLoginResponse;
+import comso.Team5.GP.users.dto.response.UserMeNicknameUpdateResponse;
 import comso.Team5.GP.users.entity.Role;
 import comso.Team5.GP.users.dto.request.UserLoginRequest;
 import comso.Team5.GP.users.dto.response.UserMeResponse;
@@ -122,4 +124,36 @@ public class UserService{
 
         return new UserMeResponse(user.getId(), user.getNickname(), user.getRole().name(), user.getEmail());
     }
+
+    // 유저 닉네임 변경
+    @Transactional
+    public UserMeNicknameUpdateResponse updateNickname(Long userId, String nickname) {
+
+        // UserId로 정보 조회 (존재하지 않을 경우 예외처리)
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        // 존재하는 경우 바꿀려고 하는 닉네임으로 변경
+        user.updateUserNickname(nickname);
+
+        // 해당 닉네임만 담겨져 있는 dto 객체로 반환
+        return new UserMeNicknameUpdateResponse(user.getNickname());
+    }
+
+    @Transactional
+    public void updatePasswordMe(Long userId, UserMePasswordUpdateRequest request) {
+
+        // 이메일 인증 완료 여부 체크
+        if (!emailVerificationRepository.existsByEmailAndIsVerifiedTrue(request.getEmail())) {
+            throw new ResponseStatusException(BAD_REQUEST, "이메일 인증이 완료되지 않았습니다.");
+        }
+
+        // 유저 아이디를 통해 정보 조회
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        // 유저 패스워드 변경
+        user.updateUserPassword(request.getPassword());
+    }
+
 }

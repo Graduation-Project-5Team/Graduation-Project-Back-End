@@ -1,5 +1,7 @@
 package comso.Team5.GP.users.service;
 
+import comso.Team5.GP.global.exception.auth.AuthException;
+import comso.Team5.GP.global.exception.auth.AuthExceptionCode;
 import comso.Team5.GP.users.entity.EmailVerification;
 import comso.Team5.GP.users.repository.EmailVerificationRepository;
 import comso.Team5.GP.users.repository.UserRepository;
@@ -38,24 +40,8 @@ public class EmailService {
             throw new ResponseStatusException(BAD_REQUEST, "이미 가입된 이메일입니다.");
         }
 
-        String code = generateCode();
-
-        // 기존 인증 요청이 있으면 삭제 후 새로 저장 (재발송 처리)
-        emailVerificationRepository
-                .findTopByEmailOrderByCreatedAtDesc(email)
-                .ifPresent(emailVerificationRepository::delete);
-
-        EmailVerification verification = EmailVerification.builder()
-                .email(email)
-                .code(code)
-                .isVerified(false)
-                .expiredAt(LocalDateTime.now().plusMinutes(CODE_EXPIRY_MINUTES))
-                .build();
-
-        emailVerificationRepository.save(verification);
-        sendEmail(email, code);
-
-        log.info("인증코드 발송 완료 - 이메일: {}", email); // @Slf4j 사용
+        // 신규 사용자 이메일 인증코드 발송
+        issueAndSendCode(email);
     }
 
     // 인증코드 검증
@@ -96,5 +82,37 @@ public class EmailService {
                         "본인이 요청하지 않은 경우 이 메일을 무시해주세요."
         );
         mailSender.send(message);
+    }
+
+    // 이메일 인증 요청 메서드
+    private void issueAndSendCode(String email) {
+        String code = generateCode();
+
+        // 기존 인증 요청이 있으면 삭제 후 새로 저장 (재발송 처리)
+        emailVerificationRepository
+                .findTopByEmailOrderByCreatedAtDesc(email)
+                .ifPresent(emailVerificationRepository::delete);
+
+        EmailVerification verification = EmailVerification.builder()
+                .email(email)
+                .code(code)
+                .isVerified(false)
+                .expiredAt(LocalDateTime.now().plusMinutes(CODE_EXPIRY_MINUTES))
+                .build();
+
+        emailVerificationRepository.save(verification);
+        sendEmail(email, code);
+
+        log.info("인증코드 발송 완료 - 이메일: {}", email); // @Slf4j 사용
+    }
+
+    // 기존 사용자 이메일 인증
+    public void updateSendEmail(String email) {
+        // 사용자가 존재하는지 먼저 확인
+        userRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthException(AuthExceptionCode.NOT_FOUND_EMAIL));
+
+        // 기존 사용자 이메일 인증코드 발송
+        issueAndSendCode(email);
     }
 }
