@@ -19,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@RequestMapping("/api/users") // 공통 경로 /api/auth로 변경
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 @RestController
 public class UserController {
