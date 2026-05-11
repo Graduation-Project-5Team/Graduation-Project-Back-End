@@ -1,9 +1,11 @@
 package comso.Team5.GP.artworks.dto.response;
 
+import comso.Team5.GP.artworks.entity.ArtworkImages;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -18,6 +20,8 @@ public class ArtworkResponse {
     private String title;
 
     private String description;
+
+    private List<String> imageUrl;
 
     private int likeCount;
 

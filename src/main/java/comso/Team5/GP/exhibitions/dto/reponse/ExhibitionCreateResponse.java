@@ -16,11 +16,11 @@ public class ExhibitionCreateResponse {
 
     private String description;
 
+    private String thumbnailImage;
+
     private LocalDate startDate;
 
     private LocalDate endDate;
 
     private Long departmentId;
-
-
 }

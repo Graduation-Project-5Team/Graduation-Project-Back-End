@@ -8,8 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ArtworkCreateRequest {
-    private Long userId;
-
     private Long exhiId;
 
     private String title;

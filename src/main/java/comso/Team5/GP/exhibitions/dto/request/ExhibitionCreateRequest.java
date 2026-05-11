@@ -14,8 +14,6 @@ public class ExhibitionCreateRequest {
 
     private String description;
 
-    // TODO private String thumbnailImage;
-
     private LocalDate startDate;
 
     private LocalDate endDate;
