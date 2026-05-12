@@ -97,6 +97,25 @@ public class ArtworkController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{artworkId}/like")
+    public ResponseEntity<Void> addLike(@PathVariable Long artworkId, HttpServletRequest request) {
+
+        JwtPrincipal principal = extractPrincipal(request);
+
+        artworkService.addLike(artworkId, principal.userId());
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{artworkId}/like")
+    public ResponseEntity<Void> removeLike(@PathVariable Long artworkId, HttpServletRequest request) {
+        JwtPrincipal principal = extractPrincipal(request);
+
+        artworkService.removeLike(artworkId, principal.userId());
+
+        return ResponseEntity.noContent().build();
+    }
+
     // Authorization 헤더에서 JWT 토큰을 추출하고 principal 반환
     private JwtPrincipal extractPrincipal(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");

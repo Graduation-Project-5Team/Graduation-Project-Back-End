@@ -154,6 +154,7 @@ public class ExhibitionService {
                 exhibition.getExhiId(),
                 exhibition.getName(),
                 exhibition.getDescription(),
+                exhibition.getLocation(),
                 exhibition.getThumbnailImage(),
                 exhibition.getStartDate(),
                 exhibition.getEndDate(),

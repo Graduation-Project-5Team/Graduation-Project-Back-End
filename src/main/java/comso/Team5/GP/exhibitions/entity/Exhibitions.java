@@ -34,6 +34,9 @@ public class Exhibitions {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "location")
+    private String location;
+
     @Column(name = "thumbnail_image")
     private String thumbnailImage;
 
