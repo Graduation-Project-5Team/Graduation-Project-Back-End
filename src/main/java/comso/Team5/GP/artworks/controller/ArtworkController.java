@@ -13,15 +13,20 @@ import comso.Team5.GP.util.jwt.JwtPrincipal;
 import comso.Team5.GP.util.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+
+import java.io.File;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/artworks")
 @RestController
@@ -53,25 +58,31 @@ public class ArtworkController {
     // 작품 등록 (인증 필요 - 학생)
     @PostMapping("/create")
     public ResponseEntity<ArtworkCreateResponse> create(
-            @RequestBody ArtworkCreateRequest request,
-            HttpServletRequest httpRequest) {
+            @RequestPart("request") ArtworkCreateRequest request,
+            HttpServletRequest httpRequest,
+            @RequestPart("images") List<MultipartFile> multipartFile) {
+
+        List<MultipartFile> files = multipartFile;
 
         JwtPrincipal principal = extractPrincipal(httpRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(artworkService.create(request, principal.userId()));
+                .body(artworkService.create(request, principal.userId(), files));
     }
 
     // 작품 수정 (인증 필요 - 본인)
     @PatchMapping("/{artworkId}")
     public ResponseEntity<ArtworkResponse> update(
             @PathVariable Long artworkId,
-            @RequestBody ArtworkUpdateRequest request,
+            @RequestPart(value = "request", required = false) ArtworkUpdateRequest request,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images,
             HttpServletRequest httpRequest) {
 
         JwtPrincipal principal = extractPrincipal(httpRequest);
 
-        return ResponseEntity.ok(artworkService.update(artworkId, request, principal.userId()));
+        List<MultipartFile> files = images;
+
+        return ResponseEntity.ok(artworkService.update(artworkId, request, principal.userId(), files));
     }
 
     // 작품 삭제 (인증 필요 - 본인)

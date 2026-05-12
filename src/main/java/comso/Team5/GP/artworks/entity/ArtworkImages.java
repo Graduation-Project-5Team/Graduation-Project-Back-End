@@ -28,4 +28,8 @@ public class ArtworkImages {
 
     @Column(name = "sort_order")
     private int sortOrder;
+
+    public void setArtwork(Artworks artwork) {
+        this.artwork = artwork;
+    }
 }

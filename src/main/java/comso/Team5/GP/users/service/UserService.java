@@ -122,7 +122,7 @@ public class UserService{
         Users user = userRepository.findById(userId).orElseThrow( // findByCheckId -> findById
                 () -> new UserException(UserExceptionCode.USER_NOT_FOUND));
 
-        return new UserMeResponse(user.getId(), user.getNickname(), user.getRole().name(), user.getEmail());
+        return new UserMeResponse(user.getId(), user.getNickname(), user.getRole().name(), user.getEmail(), user.getDepartments().getDeptId(), user.getDepartments().getName());
     }
 
     // 유저 닉네임 변경

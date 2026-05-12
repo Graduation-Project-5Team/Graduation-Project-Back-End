@@ -14,4 +14,8 @@ public class UserMeResponse {
     private String role;
     
     private String email;
+
+    private Long departmentId;
+
+    private String departmentName;
 }

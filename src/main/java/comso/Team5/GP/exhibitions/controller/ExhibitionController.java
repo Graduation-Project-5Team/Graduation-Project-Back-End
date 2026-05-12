@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -39,25 +40,29 @@ public class ExhibitionController {
     // 전시 등록 (인증 필요 - 관리자)
     @PostMapping
     public ResponseEntity<ExhibitionCreateResponse> create(
-            @RequestBody ExhibitionCreateRequest request,
+            @RequestPart("image") MultipartFile image,
+            @RequestPart("request") ExhibitionCreateRequest request,
             HttpServletRequest httpRequest) {
+
+        MultipartFile file = image;
 
         JwtPrincipal principal = extractPrincipal(httpRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(exhibitionsService.create(request, principal.userId()));
+                .body(exhibitionsService.create(request, principal.userId(), file));
     }
 
     // 전시 수정 (인증 필요 - 관리자)
     @PatchMapping("/{exhiId}")
     public ResponseEntity<ExhibitionCreateResponse> update(
             @PathVariable Long exhiId,
-            @RequestBody ExhibitionUpdateRequest request,
+            @RequestPart(value = "request", required = false) ExhibitionUpdateRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile image,
             HttpServletRequest httpRequest) {
 
         JwtPrincipal principal = extractPrincipal(httpRequest);
 
-        return ResponseEntity.ok(exhibitionsService.update(exhiId, request, principal.userId()));
+        return ResponseEntity.ok(exhibitionsService.update(exhiId, request, principal.userId(), image));
     }
 
     // 전시 삭제 (인증 필요 - 관리자)
