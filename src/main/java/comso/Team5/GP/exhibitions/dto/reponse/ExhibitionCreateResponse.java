@@ -16,6 +16,8 @@ public class ExhibitionCreateResponse {
 
     private String description;
 
+    private String location;
+
     private String thumbnailImage;
 
     private LocalDate startDate;

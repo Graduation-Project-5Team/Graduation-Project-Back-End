@@ -22,8 +22,8 @@ values ('컴퓨터 소프트웨어학과 전시', '컴퓨터 소프트웨어학�
         'computerSoftWare.png', 1, '2026-05-11', '2026-08-11');
 
 -- 작품 추가
-INSERT INTO Artworks(user_id, exhi_id, title, description, like_count, created_at, updated_at)
-VALUES(2, 1, '컴퓨터소프트웨어학과 전시', '컴퓨터 소프트가 아니라 컴퓨터 공학이네용',
+INSERT INTO Artworks(user_id, exhi_id, title, description, like_count, views, created_at, updated_at)
+VALUES(2, 1, '컴퓨터소프트웨어학과 전시', '컴퓨터 소프트가 아니라 컴퓨터 공학이네용', 0,
        0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 --작품의 이미지들
 INSERT INTO ARTWORK_IMAGES(artwork_id, image_url, sort_order) VALUES

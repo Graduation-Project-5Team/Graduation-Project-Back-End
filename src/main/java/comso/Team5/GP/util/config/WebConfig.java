@@ -21,7 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
                 // 프론트와 연결중인 도메인 설정
                 .allowedOrigins("http://localhost:5173")
                 // 허용할 메서드 설정
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
                 // 허용할 헤더 설정
                 .allowedHeaders("*")
                 // 허용할 인증 설정(쿠키 .. 등)

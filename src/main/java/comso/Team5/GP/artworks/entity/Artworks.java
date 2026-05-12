@@ -40,9 +40,11 @@ public class Artworks {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Builder.Default
     @Column(name = "like_count")
-    private int likeCount = 0;
+    private int likeCount;
+
+    @Column(name = "views")
+    private int views;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -62,5 +64,13 @@ public class Artworks {
             image.setArtwork(this);
             this.imageUrl.add(image);
         }
+    }
+
+    public void addLike() {
+        this.likeCount = likeCount + 1;
+    }
+
+    public void removeLike() {
+        this.likeCount = likeCount - 1;
     }
 }

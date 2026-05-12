@@ -5,9 +5,12 @@ import comso.Team5.GP.artworks.dto.request.ArtworkUpdateRequest;
 import comso.Team5.GP.artworks.dto.response.ArtworkCreateResponse;
 import comso.Team5.GP.artworks.dto.response.ArtworkResponse;
 import comso.Team5.GP.artworks.entity.ArtworkImages;
+import comso.Team5.GP.artworks.entity.ArtworkLike;
+import comso.Team5.GP.artworks.repository.ArtworkLikeRepository;
 import comso.Team5.GP.users.entity.Role;
 import comso.Team5.GP.global.exception.artworks.ArtworkException;
 import comso.Team5.GP.global.exception.artworks.ArtworkExceptionCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -46,6 +50,7 @@ public class ArtworkService {
     private final ArtworkRepository artworkRepository;
     private final ExhibitionRepository exhibitionRepository;
     private final UserRepository userRepository;
+    private final ArtworkLikeRepository artworkLikeRepository;
 
     // 작품 목록 조회 (페이지네이션)
     @Transactional(readOnly = true)
@@ -92,6 +97,7 @@ public class ArtworkService {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .likeCount(0)
+                .views(0)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -156,6 +162,53 @@ public class ArtworkService {
         deletePhysicalFiles(new ArrayList<>(artwork.getImageUrl()));
 
         artworkRepository.delete(artwork);
+    }
+
+    // 좋아요 수 증가
+    public void addLike(Long artworkId, Long userId) {
+
+        // 유저, 작품 조회
+        Artworks artwork = artworkRepository.findById(artworkId)
+                            .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
+
+        Users user = userRepository.findById(userId)
+                            .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        // 좋아요 증가 요청을 보냈는데 좋아요가 되어있는 경우 예외처리
+        if (artworkLikeRepository.existsByUserAndArtwork(user, artwork)) {
+            throw new ArtworkException(ArtworkExceptionCode.ALREADY_LIKED);
+        }
+
+        // User와 Artwork 객체로 like 테이블 객체를 생성 후 DB에 저장
+        ArtworkLike like = new ArtworkLike(user, artwork);
+        artworkLikeRepository.save(like);
+
+        // 좋아요 수 증가 메서드
+        artwork.addLike();
+    }
+
+    // 좋아요 수 삭제
+    public void removeLike(Long artworkId, Long userId) {
+
+        // 유저, 작품 조회
+        Artworks artwork = artworkRepository.findById(artworkId)
+                .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
+
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        // 좋아요를 누르지 않은 상태에서 요청을 할경우
+        if (!artworkLikeRepository.existsByUserAndArtwork(user, artwork)) {
+            throw new ArtworkException(ArtworkExceptionCode.READY_LIKE);
+        }
+
+        // 작품 좋아요 테이블 객체 저장 후 DB 삭제
+        ArtworkLike like = artworkLikeRepository.getReferenceByUserAndArtwork(user, artwork)
+                        .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.USER_OR_ARTWORK_NOT_FOUND));
+        artworkLikeRepository.delete(like);
+
+        // 작품의 좋아요 수 감소
+        artwork.removeLike();
     }
 
     private ArtworkResponse toResponse(Artworks artwork) {
