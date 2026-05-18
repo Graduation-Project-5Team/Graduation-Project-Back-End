@@ -45,6 +45,13 @@ spring:
       schema-locations: classpath:db/schema.sql
       encoding: UTF-8
 
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6379
+
+
   # Spring Mail 설정 추가 (Gmail 기준)
   mail:
     host: smtp.gmail.com
@@ -92,3 +99,4 @@ server:
 
 file:
   upload-dir: ${user.dir}/images
+

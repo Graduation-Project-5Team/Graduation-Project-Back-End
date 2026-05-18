@@ -51,6 +51,7 @@ public class ArtworkService {
     private final ExhibitionRepository exhibitionRepository;
     private final UserRepository userRepository;
     private final ArtworkLikeRepository artworkLikeRepository;
+    private final ArtworkVeiwsService artworkVeiwsService;
 
     // 작품 목록 조회 (페이지네이션)
     @Transactional(readOnly = true)
@@ -63,6 +64,19 @@ public class ArtworkService {
     public ArtworkResponse getArtwork(Long artworkId) {
         Artworks artwork = artworkRepository.findById(artworkId)
                 .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
+        return toResponse(artwork);
+    }
+
+    // 작품 세부 정보 조회 (조회수)
+    @Transactional(readOnly = true)
+    public ArtworkResponse getArtworkDetail(Long artworkId, String viewerKey) {
+
+        // 작품 정보 조회
+        Artworks artwork = artworkRepository.findById(artworkId)
+                .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
+
+        // 작품 조회 수 증가시키는 메서드
+        artworkVeiwsService.increaseViewCount(artwork.getArtworkId(), viewerKey);
         return toResponse(artwork);
     }
 
@@ -224,6 +238,7 @@ public class ArtworkService {
                 artwork.getDescription(),
                 imageUrls,
                 artwork.getLikeCount(),
+                artworkVeiwsService.getViewCount(artwork.getArtworkId()),
                 artwork.getCreatedAt(),
                 artwork.getUpdatedAt()
         );

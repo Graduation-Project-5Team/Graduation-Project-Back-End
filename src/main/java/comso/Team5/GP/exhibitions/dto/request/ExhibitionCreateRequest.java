@@ -14,6 +14,8 @@ public class ExhibitionCreateRequest {
 
     private String description;
 
+    private String location;
+
     private LocalDate startDate;
 
     private LocalDate endDate;
