@@ -22,10 +22,12 @@ public class Artworks {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long artworkId;
 
+    // 유저 엔티티와 연결 (N : 1)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private Users users;
 
+    // 전시 엔티티와 연결 (N : 1)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exhi_id", referencedColumnName = "exhi_id")
     private Exhibitions exhibitions;
