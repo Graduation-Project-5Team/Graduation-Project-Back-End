@@ -43,7 +43,17 @@ public class ArtworkController {
         return ResponseEntity.ok(artworkService.getArtworks(pageable));
     }
 
-    // 작품 단건 조회 (인증 불필요)
+    // 작품 세부 정보 조회 (인증 - 비로그인/로그인 분류)
+    @GetMapping("/{artworkId}/detail")
+    public ResponseEntity<ArtworkResponse> getArtworkDetail(@PathVariable Long artworkId,
+                                                      HttpServletRequest request) {
+
+        String viewerKey = createViewerKey(request);
+
+        return ResponseEntity.ok(artworkService.getArtworkDetail(artworkId, viewerKey));
+    }
+
+    // 작품 단건 조회
     @GetMapping("/{artworkId}")
     public ResponseEntity<ArtworkResponse> getArtwork(@PathVariable Long artworkId) {
         return ResponseEntity.ok(artworkService.getArtwork(artworkId));
@@ -97,6 +107,7 @@ public class ArtworkController {
         return ResponseEntity.noContent().build();
     }
 
+    // 좋아요 추가
     @PostMapping("/{artworkId}/like")
     public ResponseEntity<Void> addLike(@PathVariable Long artworkId, HttpServletRequest request) {
 
@@ -107,6 +118,7 @@ public class ArtworkController {
         return ResponseEntity.noContent().build();
     }
 
+    // 좋아요 삭제
     @DeleteMapping("/{artworkId}/like")
     public ResponseEntity<Void> removeLike(@PathVariable Long artworkId, HttpServletRequest request) {
         JwtPrincipal principal = extractPrincipal(request);
@@ -127,5 +139,45 @@ public class ArtworkController {
         String token = authHeader.substring(7);
 
         return jwtUtil.getPrincipalFromToken(token);
+    }
+
+    // 비로그인 사용자의 Ip를 확인하기 위한 메서드
+    private String getClienIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
+    }
+
+    // redis에 저장할 viewer키 생성하는 메서드
+    private String createViewerKey(HttpServletRequest request) {
+        String viewerKey;
+
+        String authHeader = request.getHeader("Authorization");
+
+        // 사용자가 로그인한 사용자이면 로그인
+        if(authHeader != null && authHeader.startsWith("Bearer ")) {
+            Long userId = extractPrincipal(request).userId();
+            viewerKey = "user:" + userId;
+        } else {
+            String ip = getClienIp(request);
+            String userAgent = request.getHeader("User-Agent");
+
+            viewerKey = "user" + ip + ":" + userAgent;
+        }
+        return viewerKey;
     }
 }
