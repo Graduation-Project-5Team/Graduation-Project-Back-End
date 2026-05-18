@@ -25,6 +25,8 @@ public class ArtworkResponse {
 
     private int likeCount;
 
+    private Long views;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

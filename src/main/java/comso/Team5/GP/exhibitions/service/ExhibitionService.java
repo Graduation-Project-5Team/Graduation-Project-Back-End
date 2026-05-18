@@ -60,6 +60,7 @@ public class ExhibitionService {
         Exhibitions exhibition = Exhibitions.builder()
                 .name(request.getName())
                 .description(request.getDescription())
+                .location(request.getLocation())
                 .thumbnailImage(filePath)
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
@@ -105,6 +106,7 @@ public class ExhibitionService {
             // 요청에 포함된 필드만 수정 (null인 필드는 기존 값 유지)
             if (request.getName() != null) exhibition.setName(request.getName());
             if (request.getDescription() != null) exhibition.setDescription(request.getDescription());
+            if (request.getLocation() != null) exhibition.setLocation(request.getLocation());
             if (request.getStartDate() != null) exhibition.setStartDate(request.getStartDate());
             if (request.getEndDate() != null) exhibition.setEndDate(request.getEndDate());
             if (request.getDepartmentId() != null) {
