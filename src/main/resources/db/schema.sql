@@ -27,9 +27,12 @@ VALUES(2, 1, '컴퓨터소프트웨어학과 전시', '컴퓨터 소프트가 �
        0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 --작품의 이미지들
 INSERT INTO ARTWORK_IMAGES(artwork_id, image_url, sort_order) VALUES
-    (1, 'computer_a1', 0),
-    (1, 'computer_a2', 1),
-    (1, 'computer_a3', 2);
+    (1, 'computer_ai1.png', 0),
+    (1, 'computer_a2.png', 1),
+    (1, 'computer_a3.png', 2);
+
+INSERT INTO COMMENTS(artwork_id, user_id, content, created_at, deleted) VALUES(
+    1, 2, '댓글이에용', CURRENT_TIMESTAMP, false);
 
 -- (이메일)테이블 추가
 CREATE TABLE IF NOT EXISTS email_verification (
