@@ -171,7 +171,7 @@ public class ArtworkService {
         if (!artwork.getUsers().getUserId().equals(userId)) {
             throw new ArtworkException(ArtworkExceptionCode.FORBIDDEN_ARTWORK);
         }
-        
+
         // 물리적 파일 삭제
         deletePhysicalFiles(new ArrayList<>(artwork.getImageUrl()));
 
