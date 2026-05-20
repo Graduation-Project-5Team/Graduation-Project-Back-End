@@ -35,4 +35,15 @@ public class Comments {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "deleted_by")
+    private CommentDeletedBy deletedBy;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }
