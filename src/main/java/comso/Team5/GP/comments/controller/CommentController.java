@@ -3,6 +3,7 @@ package comso.Team5.GP.comments.controller;
 import comso.Team5.GP.comments.dto.request.CommentCreateRequest;
 import comso.Team5.GP.comments.dto.request.CommentUpdateRequest;
 import comso.Team5.GP.comments.dto.response.CommentCreateResponse;
+import comso.Team5.GP.comments.dto.response.CommentDeletedResponse;
 import comso.Team5.GP.comments.dto.response.CommentResponse;
 import comso.Team5.GP.comments.service.CommentService;
 import comso.Team5.GP.global.exception.users.UserException;
@@ -49,15 +50,18 @@ public class CommentController {
 
     // 댓글 삭제 (인증 필요 - 본인)
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<CommentDeletedResponse> delete(
             @PathVariable Long commentId,
             HttpServletRequest httpRequest) {
 
         JwtPrincipal principal = extractPrincipal(httpRequest);
-        commentService.delete(commentId, principal.userId());
 
-        return ResponseEntity.noContent().build();
+        CommentDeletedResponse response = new CommentDeletedResponse(commentService.delete(commentId, principal));
+
+        return ResponseEntity.ok().body(response);
     }
+
+
 
     // Authorization 헤더에서 JWT 토큰을 추출하고 principal 반환
     private JwtPrincipal extractPrincipal(HttpServletRequest request) {
