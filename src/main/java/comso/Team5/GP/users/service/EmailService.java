@@ -2,7 +2,10 @@ package comso.Team5.GP.users.service;
 
 import comso.Team5.GP.global.exception.auth.AuthException;
 import comso.Team5.GP.global.exception.auth.AuthExceptionCode;
+import comso.Team5.GP.global.exception.users.UserException;
+import comso.Team5.GP.global.exception.users.UserExceptionCode;
 import comso.Team5.GP.users.entity.EmailVerification;
+import comso.Team5.GP.users.entity.Users;
 import comso.Team5.GP.users.repository.EmailVerificationRepository;
 import comso.Team5.GP.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +14,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -27,6 +31,9 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final EmailVerificationRepository emailVerificationRepository;
     private final UserRepository userRepository; // 이메일 중복 체크용
+
+    // 학생 이메일 도메인 (상수)
+    private static final String STUDENT_EMAIL_DOMAIN = "@gsuite.induk.ac.kr";
 
     // 인증코드 유효시간 5분
     private static final int CODE_EXPIRY_MINUTES = 5;
@@ -63,6 +70,34 @@ public class EmailService {
         }
 
         verification.verify(); // isVerified = true
+    }
+
+    // 기존 사용자 이메일 인증
+    public void updateSendEmail(String email) {
+        // 사용자가 존재하는지 먼저 확인
+        userRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthException(AuthExceptionCode.NOT_FOUND_EMAIL));
+
+        // 기존 사용자 이메일 인증코드 발송
+        issueAndSendCode(email);
+    }
+
+    public void studentSend(Long userId, String email) {
+
+        // 학생 인증 요청을 보낸 사용자 조회
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        // 기존 이메일과 학생 인증 요청을 보낸 이메일이 중복되는지 확인
+        if (user.getEmail().equals(email)) {
+            throw new UserException(UserExceptionCode.SAME_EMAIL);
+        }
+
+        if (!email.endsWith(STUDENT_EMAIL_DOMAIN)) {
+            throw new IllegalArgumentException("학생 인증에 필요한 이메일이 아닙니다.");
+        }
+
+        issueAndSendCode(email);
     }
 
     // 6자리 랜덤 숫자 코드 생성
@@ -104,15 +139,5 @@ public class EmailService {
         sendEmail(email, code);
 
         log.info("인증코드 발송 완료 - 이메일: {}", email); // @Slf4j 사용
-    }
-
-    // 기존 사용자 이메일 인증
-    public void updateSendEmail(String email) {
-        // 사용자가 존재하는지 먼저 확인
-        userRepository.findByEmail(email)
-                .orElseThrow(() -> new AuthException(AuthExceptionCode.NOT_FOUND_EMAIL));
-
-        // 기존 사용자 이메일 인증코드 발송
-        issueAndSendCode(email);
     }
 }

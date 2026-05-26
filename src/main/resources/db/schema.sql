@@ -15,6 +15,8 @@ INSERT INTO Users (id, email, nickname, password, role, dept_id, is_verified, cr
     ('admin', 'admin@admin.com', '관리자', 'admin123', 'ADMIN', 1, true, CURRENT_TIMESTAMP);
 INSERT INTO Users(id, email, nickname, password, role, dept_id, is_verified, created_at)
 VALUES ('user123', 'user123@gsuite.induk.ac.kr', '유저1234', 'user1234', 'STUDENT', 1, true, CURRENT_TIMESTAMP);
+INSERT INTO Users(id, email, nickname, password, role, dept_id, is_verified, created_at)
+VALUES ('user1234', 'u12345678@naver.com', '유저1234', 'u12345678', 'USER', 1, true, CURRENT_TIMESTAMP);
 
 -- 전시 추가
 INSERT INTO Exhibitions (name, description, thumbnail_image, dept_id, start_date, end_date)
@@ -22,9 +24,9 @@ values ('컴퓨터 소프트웨어학과 전시', '컴퓨터 소프트웨어학�
         'computerSoftWare.png', 1, '2026-05-11', '2026-08-11');
 
 -- 작품 추가
-INSERT INTO Artworks(user_id, exhi_id, title, description, like_count, views, created_at, updated_at)
+INSERT INTO Artworks(user_id, exhi_id, title, description, like_count, views, created_at, updated_at, is_hidden)
 VALUES(2, 1, '컴퓨터소프트웨어학과 전시', '컴퓨터 소프트가 아니라 컴퓨터 공학이네용', 0,
-       0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+       0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 --작품의 이미지들
 INSERT INTO ARTWORK_IMAGES(artwork_id, image_url, sort_order) VALUES
     (1, 'computer_ai1.png', 0),

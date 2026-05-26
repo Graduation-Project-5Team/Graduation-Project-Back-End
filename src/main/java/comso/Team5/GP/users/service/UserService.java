@@ -57,8 +57,8 @@ public class UserService{
         }
 
         // 토큰 발급
-        String accessToken = jwtUtil.generateAccess(user.getUserId(), user.getId());
-        String refreshToken = jwtUtil.generateRefresh(user.getUserId(), user.getId());
+        String accessToken = jwtUtil.generateAccess(user.getUserId(), user.getId(), user.getRole());
+        String refreshToken = jwtUtil.generateRefresh(user.getUserId(), user.getId(), user.getRole());
 
         // 메서드를 통해 발급한 리프레시 토큰을 db에 저장
         user.updatedRefreshToken(refreshToken);
@@ -154,6 +154,20 @@ public class UserService{
 
         // 유저 패스워드 변경
         user.updateUserPassword(request.getPassword());
+    }
+
+    @Transactional
+    public void isVerifiedAndEmailUpdate(Long userId, String email) {
+
+        // 이메일 인증 완료 여부 체크
+        if (!emailVerificationRepository.existsByEmailAndIsVerifiedTrue(email)) {
+            throw new ResponseStatusException(BAD_REQUEST, "이메일 인증이 완료되지 않았습니다.");
+        }
+
+        Users user = userRepository.findById(userId).
+                orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        user.updateIsVerifiedAndEmail(email);
     }
 
 }

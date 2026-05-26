@@ -45,8 +45,8 @@ public class RefreshTokenService {
         }
 
         // 5. 새로운 토큰 생성 (토큰 로테이션)
-        String newAccessToken = jwtUtil.generateAccess(user.getUserId(), user.getId());
-        String newRefreshToken = jwtUtil.generateRefresh(user.getUserId(), user.getId());
+        String newAccessToken = jwtUtil.generateAccess(user.getUserId(), user.getId(), user.getRole());
+        String newRefreshToken = jwtUtil.generateRefresh(user.getUserId(), user.getId(), user.getRole());
 
         // 6. DB에 새로운 리프레시 토큰 저장
         user.updatedRefreshToken(newRefreshToken);

@@ -49,6 +49,10 @@ public class Artworks {
     @Column(name = "views")
     private int views;
 
+    @Builder.Default
+    @Column(name = "is_hidden")
+    private boolean isHidden = false;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -75,5 +79,9 @@ public class Artworks {
 
     public void removeLike() {
         this.likeCount = likeCount - 1;
+    }
+
+    public void updateHidden(boolean isHidden) {
+        this.isHidden = isHidden;
     }
 }
