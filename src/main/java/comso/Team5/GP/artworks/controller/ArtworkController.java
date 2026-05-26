@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 
-import java.io.File;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -105,6 +104,14 @@ public class ArtworkController {
         artworkService.delete(artworkId, principal.userId());
 
         return ResponseEntity.noContent().build();
+    }
+
+    // 좋아요 상태 조회 (인증 필요)
+    @GetMapping("/{artworkId}/like/status")
+    public ResponseEntity<Boolean> getLikeStatus(@PathVariable Long artworkId,
+                                                  HttpServletRequest request) {
+        JwtPrincipal principal = extractPrincipal(request);
+        return ResponseEntity.ok(artworkService.getLikeStatus(artworkId, principal.userId()));
     }
 
     // 좋아요 추가

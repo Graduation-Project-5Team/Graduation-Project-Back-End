@@ -178,6 +178,16 @@ public class ArtworkService {
         artworkRepository.delete(artwork);
     }
 
+    // 좋아요 상태 조회
+    @Transactional(readOnly = true)
+    public boolean getLikeStatus(Long artworkId, Long userId) {
+        Artworks artwork = artworkRepository.findById(artworkId)
+                .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+        return artworkLikeRepository.existsByUserAndArtwork(user, artwork);
+    }
+
     // 좋아요 수 증가
     public void addLike(Long artworkId, Long userId) {
 
