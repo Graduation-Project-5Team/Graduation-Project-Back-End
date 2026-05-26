@@ -52,7 +52,6 @@ public class RedisSingleDataServiceImplements implements RedisSingleDataService{
     // key의 값을 기준으로 해당 밸류를 가져오는 메서드
     @Override
     public String getSingleData(String key) {
-        log.info("key : " + key);
         Object value = redishandller.getValueOperations().get(key);
         if (value == null) {
             return "";

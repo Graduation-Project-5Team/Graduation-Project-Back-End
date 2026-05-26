@@ -79,4 +79,9 @@ public class Users {
         this.password = password;
     }
 
+    public void updateIsVerifiedAndEmail(String email) {
+        this.email = email;
+        this.isVerified = true;
+    }
+
 }

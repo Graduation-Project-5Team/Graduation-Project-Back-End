@@ -8,6 +8,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
+import comso.Team5.GP.users.entity.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +36,7 @@ public class JwtUtil {
     @Value("${jwt.issuer:GP}")
     private String ISSUER;
 
-    public String generateAccess(Long userId, String id) {
+    public String generateAccess(Long userId, String id, Role role) {
 
         Instant now = Instant.now();
         long issuedAt = now.getEpochSecond();
@@ -46,6 +47,7 @@ public class JwtUtil {
         String escapedId = escapeJson(id);
         String payloadJson = "{\"sub\":\""+ escapedId + "\""
                 + ",\"id\":" + userId
+                + ",\"role\":\"" + role.name() + "\""
                 + ",\"iss\":\"" + ISSUER + "\""
                 + ",\"iat\":" + issuedAt
                 + ",\"exp\":" + expiresAt
@@ -59,7 +61,7 @@ public class JwtUtil {
         return content + "." + signature;
     }
 
-    public String generateRefresh(Long userId, String id) {
+    public String generateRefresh(Long userId, String id, Role role) {
         Instant now = Instant.now();
         long issuedAt = now.getEpochSecond();
         long expiresAt = now.plusMillis(REFRESH_EXPIRATION).getEpochSecond();
@@ -69,6 +71,7 @@ public class JwtUtil {
         String escapedId = escapeJson(id);
         String payloadJson = "{\"sub\":\"" + escapedId + "\""
                 + ",\"id\":" + userId
+                + ",\"role\":\"" + role.name() + "\""
                 + ",\"iss\":\"" + ISSUER + "\""
                 + ",\"iat\":" + issuedAt
                 + ",\"exp\":" + expiresAt
@@ -129,11 +132,14 @@ public class JwtUtil {
     public JwtPrincipal getPrincipalFromToken(String token) {
         DecodedJWT decodedJWT = verifyToken(token);
         var idClaim = decodedJWT.getClaim("id");
+        var roleClaim = decodedJWT.getClaim("role");
         String subject = decodedJWT.getSubject();
-        if (idClaim.isNull() || subject == null || subject.isBlank()) {
+        if (idClaim.isNull() || roleClaim.isNull() ||  subject == null || subject.isBlank()) {
             throw new UserException(UserExceptionCode.INVALID_TOKEN);
         }
-        return new JwtPrincipal(idClaim.asLong(), subject);
+
+        log.info("1 : {}" , roleClaim);
+        return new JwtPrincipal(idClaim.asLong(), subject, Role.valueOf(roleClaim.asString()));
     }
 
     /**
