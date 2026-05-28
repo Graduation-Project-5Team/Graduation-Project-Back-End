@@ -1,10 +1,14 @@
 package comso.Team5.GP.users.service;
 
+import comso.Team5.GP.departments.entity.Departments;
+import comso.Team5.GP.departments.repository.DepartmentRepository;
+import comso.Team5.GP.departments.service.DepartmentService;
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
 import comso.Team5.GP.users.dto.request.UserMePasswordUpdateRequest;
 import comso.Team5.GP.users.dto.response.UserLoginResponse;
 import comso.Team5.GP.users.dto.response.UserMeNicknameUpdateResponse;
+import comso.Team5.GP.users.dto.response.UserUpdateProfileImageResponse;
 import comso.Team5.GP.users.entity.Role;
 import comso.Team5.GP.users.dto.request.UserLoginRequest;
 import comso.Team5.GP.users.dto.response.UserMeResponse;
@@ -15,9 +19,15 @@ import comso.Team5.GP.util.jwt.JwtUtil;
 import comso.Team5.GP.users.dto.request.SignupRequestDto;
 import comso.Team5.GP.users.repository.EmailVerificationRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -32,10 +42,13 @@ public class UserService{
     private final JwtUtil jwtUtil;
     private final EmailVerificationRepository emailVerificationRepository; // 이메일 인증 여부 확인용
     private final RefreshTokenService refreshTokenService; // RefreshTokenService 주입
+    private final DepartmentRepository departmentRepository;
 
     // 학생 이메일 도메인 (상수)
     private static final String STUDENT_EMAIL_DOMAIN = "@gsuite.induk.ac.kr";
 
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     //  로그인
     @Transactional
@@ -55,6 +68,8 @@ public class UserService{
         if (!loginRequest.getPassword().equals(user.getPassword())) {
             throw new ResponseStatusException(UNAUTHORIZED, "아이디 혹은 비밀번호가 올바르지 않습니다.");
         }
+
+
 
         // 토큰 발급
         String accessToken = jwtUtil.generateAccess(user.getUserId(), user.getId(), user.getRole());
@@ -86,6 +101,8 @@ public class UserService{
             throw new ResponseStatusException(BAD_REQUEST, "이메일 인증이 완료되지 않았습니다.");
         }
 
+        Departments departments = departmentRepository.getById(dto.getDeptId());
+
         // 학생 여부 판단
         Role role = dto.getEmail().endsWith(STUDENT_EMAIL_DOMAIN)
                 ? Role.STUDENT
@@ -97,8 +114,10 @@ public class UserService{
                 .password(dto.getPassword())
                 .email(dto.getEmail())
                 .nickname(dto.getName())
+                .departments(departments)
                 .role(role)
                 .isVerified(true)
+                .profileImage("default-profileImage.png")
                 .build();
 
         userRepository.save(user);
@@ -122,7 +141,7 @@ public class UserService{
         Users user = userRepository.findById(userId).orElseThrow( // findByCheckId -> findById
                 () -> new UserException(UserExceptionCode.USER_NOT_FOUND));
 
-        return new UserMeResponse(user.getId(), user.getNickname(), user.getRole().name(), user.getEmail(), user.getDepartments().getDeptId(), user.getDepartments().getName());
+        return new UserMeResponse(user.getId(), user.getNickname(), user.getRole().name(), user.getEmail(), user.getDepartments().getDeptId(), user.getDepartments().getName(), user.getProfileImage());
     }
 
     // 유저 닉네임 변경
@@ -168,6 +187,45 @@ public class UserService{
                 orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
 
         user.updateIsVerifiedAndEmail(email);
+    }
+
+    // 유저 프로필 이미지 추가/수정 서비스 메서드
+    @Transactional
+    public UserUpdateProfileImageResponse addProfileImage(MultipartFile image, Long userId) {
+
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        File dir = new File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        String filePath = imageSave(image, dir);
+
+        user.updateUserProfileImage(filePath);
+
+        return new UserUpdateProfileImageResponse(filePath);
+    }
+
+    private String imageSave(MultipartFile image, File dir) {
+        String dbFilePath = "";
+        if (image != null || !image.isEmpty()) {
+            try {
+                String originalFileName = image.getOriginalFilename();
+
+                String savedFileName = UUID.randomUUID().toString() + "_" + originalFileName;
+
+                File serverFile = new File(dir + File.separator + savedFileName);
+                image.transferTo(serverFile);
+
+                dbFilePath = savedFileName;
+
+            } catch (IOException e) {
+                throw new RuntimeException("이미지 저장 중 오류가 발생했습니다.", e);
+            }
+        }
+        return dbFilePath;
     }
 
 }

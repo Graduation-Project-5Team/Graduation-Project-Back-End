@@ -45,5 +45,4 @@ public class Exhibitions {
 
     @Column(name = "end_date")
     private LocalDate endDate;
-
 }

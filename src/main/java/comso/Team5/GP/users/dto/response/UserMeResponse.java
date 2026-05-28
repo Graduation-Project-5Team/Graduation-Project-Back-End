@@ -18,4 +18,6 @@ public class UserMeResponse {
     private Long departmentId;
 
     private String departmentName;
+
+    private String userProfileImage;
 }

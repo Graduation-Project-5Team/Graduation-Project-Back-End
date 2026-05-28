@@ -56,7 +56,7 @@ public class CommentController {
 
         JwtPrincipal principal = extractPrincipal(httpRequest);
 
-        CommentDeletedResponse response = new CommentDeletedResponse(commentService.delete(commentId, principal));
+        CommentDeletedResponse response = commentService.delete(commentId, principal);
 
         return ResponseEntity.ok().body(response);
     }

@@ -3,13 +3,21 @@ package comso.Team5.GP.users.controller;
 import comso.Team5.GP.artworks.dto.response.ArtworkHidingResponse;
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
+import comso.Team5.GP.users.dto.request.UserRoleChangeRequest;
+import comso.Team5.GP.users.dto.response.UserListResponse;
+import comso.Team5.GP.users.dto.response.UserRoleChangeResponse;
 import comso.Team5.GP.users.service.AdminService;
 import comso.Team5.GP.util.jwt.JwtPrincipal;
 import comso.Team5.GP.util.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +28,30 @@ public class AdminController {
 
     private final AdminService adminService;
     private final JwtUtil jwtUtil;
+
+    // 관리자 페이지 사용자 전체 조회
+    @GetMapping("/user-list")
+    public ResponseEntity<Page<UserListResponse>> userList(HttpServletRequest request,
+                                                           @RequestParam(required = false) String keyword,
+                                                           @PageableDefault(size = 20, sort = "userId", direction = Sort.Direction.DESC) Pageable pageable) {
+        JwtPrincipal principal = extractPrincipal(request);
+
+        Page<UserListResponse> userList = adminService.getUserList(principal.role(), keyword, pageable);
+
+        return ResponseEntity.ok(userList);
+    }
+
+    // 권한 변경
+    @PostMapping("/role-change")
+    public ResponseEntity<UserRoleChangeResponse> changeRole(
+            HttpServletRequest request,
+            @Valid @RequestBody UserRoleChangeRequest requestDto) {
+        JwtPrincipal jwtPrincipal = extractPrincipal(request);
+
+        UserRoleChangeResponse response = adminService.changeRole(jwtPrincipal, requestDto);
+
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("/artworks/{artworkId}/hiding")
     public ResponseEntity<ArtworkHidingResponse> artworkHding(

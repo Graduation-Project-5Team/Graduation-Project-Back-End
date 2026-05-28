@@ -5,6 +5,7 @@ import comso.Team5.GP.artworks.repository.ArtworkRepository;
 import comso.Team5.GP.comments.dto.request.CommentCreateRequest;
 import comso.Team5.GP.comments.dto.request.CommentUpdateRequest;
 import comso.Team5.GP.comments.dto.response.CommentCreateResponse;
+import comso.Team5.GP.comments.dto.response.CommentDeletedResponse;
 import comso.Team5.GP.comments.dto.response.CommentResponse;
 import comso.Team5.GP.comments.entity.CommentDeletedBy;
 import comso.Team5.GP.global.exception.comments.CommentException;
@@ -84,7 +85,7 @@ public class CommentService {
     }
 
     // 댓글 삭제 (숨김 처리. -> 관리자, 댓글 원작자, 작품자가 삭제할 경우 리턴하는 메세지가 다르다.)
-    public String delete(Long commentId, JwtPrincipal principal) {
+    public CommentDeletedResponse delete(Long commentId, JwtPrincipal principal) {
 
         Comments comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentException(CommentExceptionCode.NOT_FOUND_COMMENT));
@@ -105,7 +106,7 @@ public class CommentService {
             comment.setDeleted(true);
             comment.setDeletedBy(CommentDeletedBy.ADMIN);
             comment.setDeletedAt(LocalDateTime.now());
-            return "관계자에 의해 삭제된 댓글입니다.";
+            return new CommentDeletedResponse("관계자에 의해 삭제된 댓글입니다.", true);
         }
 
         // 댓글 작성자가 댓글을 지웠을 시
@@ -113,7 +114,7 @@ public class CommentService {
             comment.setDeleted(true);
             comment.setDeletedBy(CommentDeletedBy.User);
             comment.setDeletedAt(LocalDateTime.now());
-            return "댓글이 삭제되었습니다.";
+            return new CommentDeletedResponse("댓글이 삭제되었습니다.", true);
         }
 
         // 작품의 사용자가 댓글을 지울 시
@@ -121,7 +122,7 @@ public class CommentService {
             comment.setDeleted(true);
             comment.setDeletedBy(CommentDeletedBy.ARTWORK_OWNER);
             comment.setDeletedAt(LocalDateTime.now());
-            return "작품의 사용자가 댓글을 삭제했습니다.";
+            return new CommentDeletedResponse("작품의 사용자가 댓글을 삭제했습니다.", true);
         }
 
         throw new CommentException(CommentExceptionCode.FORBIDDEN_COMMENT);

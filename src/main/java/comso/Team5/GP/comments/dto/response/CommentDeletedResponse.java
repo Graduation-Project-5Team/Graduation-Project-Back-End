@@ -7,4 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CommentDeletedResponse {
     private String message;
+
+    private boolean deleted;
 }
