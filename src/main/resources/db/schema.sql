@@ -11,12 +11,12 @@ INSERT INTO departments (name) VALUES ('건축학과');
 INSERT INTO departments (name) VALUES ('주얼리 디자인학과');
 
 --사용자 추가
-INSERT INTO Users (id, email, nickname, password, role, dept_id, is_verified, created_at) VALUES
-    ('admin', 'admin@admin.com', '관리자', 'admin123', 'ADMIN', 1, true, CURRENT_TIMESTAMP);
-INSERT INTO Users(id, email, nickname, password, role, dept_id, is_verified, created_at)
-VALUES ('user123', 'user123@gsuite.induk.ac.kr', '유저1234', 'user1234', 'STUDENT', 1, true, CURRENT_TIMESTAMP);
-INSERT INTO Users(id, email, nickname, password, role, dept_id, is_verified, created_at)
-VALUES ('user1234', 'u12345678@naver.com', '유저1234', 'u12345678', 'USER', 1, true, CURRENT_TIMESTAMP);
+INSERT INTO Users (id, email, nickname, password, role, dept_id, is_verified, created_at, profile_image) VALUES
+    ('admin', 'admin@admin.com', '관리자', 'admin123', 'ADMIN', 1, true, CURRENT_TIMESTAMP, 'default-profileImage.png');
+INSERT INTO Users(id, email, nickname, password, role, dept_id, is_verified, created_at, profile_image)
+VALUES ('user123', 'user123@gsuite.induk.ac.kr', '유저1234', 'user1234', 'STUDENT', 1, true, CURRENT_TIMESTAMP, 'default-profileImage.png');
+INSERT INTO Users(id, email, nickname, password, role, dept_id, is_verified, created_at, profile_image)
+VALUES ('user1234', 'u12345678@naver.com', '유저1234', 'u12345678', 'USER', 1, true, CURRENT_TIMESTAMP, 'default-profileImage.png');
 
 -- 전시 추가
 INSERT INTO Exhibitions (name, description, thumbnail_image, dept_id, start_date, end_date)

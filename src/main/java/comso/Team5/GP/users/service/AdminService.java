@@ -7,16 +7,63 @@ import comso.Team5.GP.global.exception.artworks.ArtworkException;
 import comso.Team5.GP.global.exception.artworks.ArtworkExceptionCode;
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
+import comso.Team5.GP.users.dto.request.UserRoleChangeRequest;
+import comso.Team5.GP.users.dto.response.UserListResponse;
+import comso.Team5.GP.users.dto.response.UserRoleChangeResponse;
 import comso.Team5.GP.users.entity.Role;
-import jakarta.transaction.Transactional;
+import comso.Team5.GP.users.entity.Users;
+import comso.Team5.GP.users.repository.UserRepository;
+import comso.Team5.GP.util.jwt.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class AdminService {
 
     private final ArtworkRepository artworkRepository;
+    private final UserRepository userRepository;
+
+    @Transactional
+    public Page<UserListResponse> getUserList(Role role, String keyword, Pageable pageable) {
+
+        if (!role.equals(Role.ADMIN)) {
+            throw new UserException(UserExceptionCode.NOT_ADMIN);
+        }
+
+        Page<Users> users;
+
+        if(keyword == null || keyword.isBlank()) {
+            users = userRepository.findAllAndWithDepartments(pageable);
+        } else {
+            users = userRepository.findByNickNameContaining(keyword, pageable);
+        }
+
+        return users.map(UserListResponse::from);
+    }
+
+    @Transactional
+    public UserRoleChangeResponse changeRole(JwtPrincipal principal, UserRoleChangeRequest request) {
+
+        // 관리자가
+        if (principal.userId().equals(request.getUserId())) {
+            throw new UserException(UserExceptionCode.CANNOT_CHANGE_SELF_ROLE);
+        }
+
+        if (!principal.role().equals(Role.ADMIN)) {
+            throw new UserException(UserExceptionCode.NOT_ADMIN);
+        }
+
+        Users user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        user.updateUserRole(request.getRole());
+
+        return new UserRoleChangeResponse(user.getRole());
+    }
 
     @Transactional
     public ArtworkHidingResponse artworkHiding(Role role, Long artworkId) {

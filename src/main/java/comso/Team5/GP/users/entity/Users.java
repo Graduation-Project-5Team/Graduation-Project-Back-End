@@ -50,6 +50,9 @@ public class Users {
     @JoinColumn(name = "dept_id", referencedColumnName = "dept_id")
     private Departments departments;
 
+    @Column(name = "profile_image")
+    private String profileImage;
+
     @Column(name = "is_verified")
     private boolean isVerified;
 
@@ -78,6 +81,10 @@ public class Users {
     public void updateUserPassword(String password) {
         this.password = password;
     }
+
+    public void updateUserProfileImage(String profileImage) { this.profileImage = profileImage; }
+
+    public void updateUserRole(Role role) { this.role = role; }
 
     public void updateIsVerifiedAndEmail(String email) {
         this.email = email;

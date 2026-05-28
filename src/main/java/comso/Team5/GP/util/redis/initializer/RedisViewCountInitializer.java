@@ -25,7 +25,7 @@ public class RedisViewCountInitializer {
 
         for (Artworks artwork : artworks) {
             String key = "artwork:views:" + artwork.getArtworkId();
-            redisSingleDataService.setSingleData(key, artwork.getViews());
+            redisSingleDataService.setIfAbsent(key, artwork.getViews());
         }
     }
 }

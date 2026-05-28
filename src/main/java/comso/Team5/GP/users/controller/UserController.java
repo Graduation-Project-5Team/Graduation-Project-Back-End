@@ -6,10 +6,7 @@ import comso.Team5.GP.users.dto.request.TokenReissueRequest;
 import comso.Team5.GP.users.dto.request.UserLoginRequest;
 import comso.Team5.GP.users.dto.request.UserMeNicknameUpdateRequest;
 import comso.Team5.GP.users.dto.request.UserStudentIsVerifiedUpdateRequest;
-import comso.Team5.GP.users.dto.response.TokenReissueRefreshResponse;
-import comso.Team5.GP.users.dto.response.UserLoginResponse;
-import comso.Team5.GP.users.dto.response.UserMeNicknameUpdateResponse;
-import comso.Team5.GP.users.dto.response.UserMeResponse;
+import comso.Team5.GP.users.dto.response.*;
 import comso.Team5.GP.users.service.RefreshTokenService;
 import comso.Team5.GP.users.service.UserService;
 import comso.Team5.GP.util.jwt.JwtPrincipal;
@@ -20,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -87,6 +85,19 @@ public class UserController {
 
         // 존재하는 경우 서비스 계층에서 로직 수행
         return ResponseEntity.ok(userService.updateNickname(userId, dto.getNickname()));
+    }
+
+    // 유저 프로필 이미지 추가
+    @PatchMapping("/me/profile-image")
+    public ResponseEntity<UserUpdateProfileImageResponse> addProfileImage(
+            @RequestPart("image") MultipartFile image,
+            HttpServletRequest request) {
+
+        Long userId = extractPrincipal(request).userId();
+
+        UserUpdateProfileImageResponse response = userService.addProfileImage(image, userId);
+
+        return ResponseEntity.ok(response);
     }
 
     // 학생 인증 업데이트
