@@ -3,10 +3,12 @@ package comso.Team5.GP.artworks.service;
 import comso.Team5.GP.artworks.dto.request.ArtworkCreateRequest;
 import comso.Team5.GP.artworks.dto.request.ArtworkUpdateRequest;
 import comso.Team5.GP.artworks.dto.response.ArtworkCreateResponse;
+import comso.Team5.GP.artworks.dto.response.ArtworkImagesResponse;
 import comso.Team5.GP.artworks.dto.response.ArtworkResponse;
 import comso.Team5.GP.artworks.entity.ArtworkImages;
 import comso.Team5.GP.artworks.entity.ArtworkLike;
 import comso.Team5.GP.artworks.repository.ArtworkLikeRepository;
+import comso.Team5.GP.users.dto.response.UserIdResponse;
 import comso.Team5.GP.users.entity.Role;
 import comso.Team5.GP.global.exception.artworks.ArtworkException;
 import comso.Team5.GP.global.exception.artworks.ArtworkExceptionCode;
@@ -21,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import comso.Team5.GP.artworks.entity.Artworks;
 import comso.Team5.GP.artworks.repository.ArtworkRepository;
@@ -143,20 +144,27 @@ public class ArtworkService {
             if (request.getDescription() != null) artwork.setDescription(request.getDescription());
         }
 
-        // 바꾼 사진이 존재하면
-        if (images != null && !images.isEmpty()) {
-
             // 새 이미지 저장
             File dir = new File(uploadDir);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
+            List<ArtworkImages> finalImages = new ArrayList<>();
+
+            if(request != null && request.getKeepImageIds() != null) {
+                for (ArtworkImages image : artwork.getImageUrl()) {
+                    if (request.getKeepImageIds().contains(image.getArtworkImageId())) {
+                        finalImages.add(image);
+                    }
+                }
+            }
+
             List<ArtworkImages> newImages = saveImages(images, dir);
+            finalImages.addAll(newImages);
 
             // DB에서 이미지 업데이트 (cascade와 orphanRemoval에 의해 처리됨)
-            artwork.setImages(newImages);
+            artwork.setImages(finalImages);
 
-        }
         artwork.setUpdatedAt(LocalDateTime.now());
 
         Artworks updatedArtwork = artworkRepository.save(artwork);
@@ -236,17 +244,17 @@ public class ArtworkService {
     }
 
     private ArtworkResponse toResponse(Artworks artwork) {
-        List<String> imageUrls = artwork.getImageUrl()
-                .stream().map(ArtworkImages::getImageUrl)
-                .collect(Collectors.toList());
+
+        List<ArtworkImagesResponse> imagesResponses = artwork.getImageUrl().stream().map(ArtworkImagesResponse::from)
+                .toList();
 
         return new ArtworkResponse(
                 artwork.getArtworkId(),
-                artwork.getUsers().getUserId(),
+                new UserIdResponse(artwork.getUsers().getUserId()),
                 artwork.getExhibitions() != null ? artwork.getExhibitions().getExhiId() : null,
                 artwork.getTitle(),
                 artwork.getDescription(),
-                imageUrls,
+                imagesResponses,
                 artwork.getLikeCount(),
                 artworkVeiwsService.getViewCount(artwork.getArtworkId()),
                 artwork.getCreatedAt(),

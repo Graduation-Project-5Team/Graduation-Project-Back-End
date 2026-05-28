@@ -1,6 +1,6 @@
 package comso.Team5.GP.artworks.dto.response;
 
-import comso.Team5.GP.artworks.entity.ArtworkImages;
+import comso.Team5.GP.users.dto.response.UserIdResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,7 +13,7 @@ public class ArtworkResponse {
 
     private Long artworkId;
 
-    private Long userId;
+    private UserIdResponse user;
 
     private Long exhiId;
 
@@ -21,7 +21,7 @@ public class ArtworkResponse {
 
     private String description;
 
-    private List<String> imageUrl;
+    private List<ArtworkImagesResponse> images;
 
     private int likeCount;
 
