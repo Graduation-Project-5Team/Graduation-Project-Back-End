@@ -3,8 +3,11 @@ package comso.Team5.GP.users.service;
 import comso.Team5.GP.departments.entity.Departments;
 import comso.Team5.GP.departments.repository.DepartmentRepository;
 import comso.Team5.GP.departments.service.DepartmentService;
+import comso.Team5.GP.global.exception.departments.DepartmentException;
+import comso.Team5.GP.global.exception.departments.DepartmentExceptionCode;
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
+import comso.Team5.GP.users.dto.request.SutdentSignupRequestDto;
 import comso.Team5.GP.users.dto.request.UserMePasswordUpdateRequest;
 import comso.Team5.GP.users.dto.response.UserLoginResponse;
 import comso.Team5.GP.users.dto.response.UserMeNicknameUpdateResponse;
@@ -82,7 +85,7 @@ public class UserService{
     }
 
 
-    /// 회원가입
+    // 일반 학생 회원가입
     @Transactional
     public void signup(SignupRequestDto dto) {
 
@@ -101,7 +104,55 @@ public class UserService{
             throw new ResponseStatusException(BAD_REQUEST, "이메일 인증이 완료되지 않았습니다.");
         }
 
-        Departments departments = departmentRepository.getById(dto.getDeptId());
+        // 학생 여부 판단
+        Role role = dto.getEmail().endsWith(STUDENT_EMAIL_DOMAIN)
+                ? Role.STUDENT
+                : Role.USER;
+
+        Departments departments = null;
+
+        if (dto.getDeptId() != null) {
+            departments = departmentRepository.findById(dto.getDeptId())
+                    .orElseThrow(() -> new DepartmentException(DepartmentExceptionCode.NOT_FOUND_NAME));
+        }
+
+        Users user = Users.builder()
+                .id(dto.getId())
+                .password(dto.getPassword())
+                .email(dto.getEmail())
+                .nickname(dto.getName())
+                .role(role)
+                .departments(departments)
+                .isVerified(true)
+                .profileImage("default-profileImage.png")
+                .build();
+
+
+        userRepository.save(user);
+    }
+
+    /// 일반 학생 회원가입
+    @Transactional
+    public void studentSignup(SutdentSignupRequestDto dto) {
+
+        // 중복 아이디 체크
+        if (userRepository.existsByUserLoginId(dto.getId())) {
+            throw new ResponseStatusException(BAD_REQUEST, "이미 사용 중인 아이디입니다.");
+        }
+
+        // 중복 이메일 체크
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new ResponseStatusException(BAD_REQUEST, "이미 가입된 이메일입니다.");
+        }
+
+        // 이메일 인증 완료 여부 체크
+        if (!emailVerificationRepository.existsByEmailAndIsVerifiedTrue(dto.getEmail())) {
+            throw new ResponseStatusException(BAD_REQUEST, "이메일 인증이 완료되지 않았습니다.");
+        }
+
+        Departments departments = departmentRepository.findByDeptId(dto.getDeptId())
+                .orElseThrow(() -> new DepartmentException(DepartmentExceptionCode.NOT_FOUND_NAME));
+
 
         // 학생 여부 판단
         Role role = dto.getEmail().endsWith(STUDENT_EMAIL_DOMAIN)
@@ -114,8 +165,8 @@ public class UserService{
                 .password(dto.getPassword())
                 .email(dto.getEmail())
                 .nickname(dto.getName())
-                .departments(departments)
                 .role(role)
+                .departments(departments)
                 .isVerified(true)
                 .profileImage("default-profileImage.png")
                 .build();

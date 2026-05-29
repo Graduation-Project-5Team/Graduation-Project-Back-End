@@ -4,9 +4,7 @@ import comso.Team5.GP.artworks.entity.Artworks;
 import comso.Team5.GP.artworks.repository.ArtworkRepository;
 import comso.Team5.GP.comments.dto.request.CommentCreateRequest;
 import comso.Team5.GP.comments.dto.request.CommentUpdateRequest;
-import comso.Team5.GP.comments.dto.response.CommentCreateResponse;
-import comso.Team5.GP.comments.dto.response.CommentDeletedResponse;
-import comso.Team5.GP.comments.dto.response.CommentResponse;
+import comso.Team5.GP.comments.dto.response.*;
 import comso.Team5.GP.comments.entity.CommentDeletedBy;
 import comso.Team5.GP.global.exception.comments.CommentException;
 import comso.Team5.GP.global.exception.comments.CommentExceptionCode;
@@ -106,15 +104,19 @@ public class CommentService {
             comment.setDeleted(true);
             comment.setDeletedBy(CommentDeletedBy.ADMIN);
             comment.setDeletedAt(LocalDateTime.now());
-            return new CommentDeletedResponse("관계자에 의해 삭제된 댓글입니다.", true);
+            return new CommentDeletedResponse(
+                    "관계자에 의해 삭제된 댓글입니다.", true,
+                    new CommentDeletedByResponse(CommentDeletedBy.ADMIN));
         }
 
         // 댓글 작성자가 댓글을 지웠을 시
         if (currentUserId.equals(commentOwnerId)) {
             comment.setDeleted(true);
-            comment.setDeletedBy(CommentDeletedBy.User);
+            comment.setDeletedBy(CommentDeletedBy.USER);
             comment.setDeletedAt(LocalDateTime.now());
-            return new CommentDeletedResponse("댓글이 삭제되었습니다.", true);
+            return new CommentDeletedResponse(
+                    "댓글이 삭제되었습니다.", true,
+                    new CommentDeletedByResponse(CommentDeletedBy.USER));
         }
 
         // 작품의 사용자가 댓글을 지울 시
@@ -122,7 +124,9 @@ public class CommentService {
             comment.setDeleted(true);
             comment.setDeletedBy(CommentDeletedBy.ARTWORK_OWNER);
             comment.setDeletedAt(LocalDateTime.now());
-            return new CommentDeletedResponse("작품의 사용자가 댓글을 삭제했습니다.", true);
+            return new CommentDeletedResponse(
+                    "작품의 사용자가 댓글을 삭제했습니다.", true,
+                    new CommentDeletedByResponse(CommentDeletedBy.ARTWORK_OWNER));
         }
 
         throw new CommentException(CommentExceptionCode.FORBIDDEN_COMMENT);
@@ -132,10 +136,16 @@ public class CommentService {
     private CommentResponse toResponse(Comments comment) {
         return new CommentResponse(
                 comment.getCommentId(),
-                comment.getUser().getUserId(),
+                new CommentUserResponseDto(
+                        comment.getUser().getUserId(),
+                        comment.getUser().getNickname()
+                ),
                 comment.getArtwork().getArtworkId(),
                 comment.getContent(),
-                comment.getCreatedAt()
+                comment.getCreatedAt(),
+                comment.isDeleted(),
+                comment.getDeletedBy(),
+                comment.getDeletedAt()
         );
     }
 }

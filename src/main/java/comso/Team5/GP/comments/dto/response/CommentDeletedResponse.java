@@ -9,4 +9,6 @@ public class CommentDeletedResponse {
     private String message;
 
     private boolean deleted;
+
+    private CommentDeletedByResponse deletedBy;
 }

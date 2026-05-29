@@ -19,9 +19,9 @@ INSERT INTO Users(id, email, nickname, password, role, dept_id, is_verified, cre
 VALUES ('user1234', 'u12345678@naver.com', '유저1234', 'u12345678', 'USER', 1, true, CURRENT_TIMESTAMP, 'default-profileImage.png');
 
 -- 전시 추가
-INSERT INTO Exhibitions (name, description, thumbnail_image, dept_id, start_date, end_date)
+INSERT INTO Exhibitions (name, description, thumbnail_image, dept_id, start_date, end_date, location)
 values ('컴퓨터 소프트웨어학과 전시', '컴퓨터 소프트웨어학과 전시입니다.',
-        'computerSoftWare.png', 1, '2026-05-11', '2026-08-11');
+        'computerSoftWare.png', 1, '2026-05-11', '2026-08-11', '인덕대학교 인관 302호');
 
 -- 작품 추가
 INSERT INTO Artworks(user_id, exhi_id, title, description, like_count, views, created_at, updated_at, is_hidden)

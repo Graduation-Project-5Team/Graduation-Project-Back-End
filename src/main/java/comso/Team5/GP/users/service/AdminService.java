@@ -3,6 +3,9 @@ package comso.Team5.GP.users.service;
 import comso.Team5.GP.artworks.dto.response.ArtworkHidingResponse;
 import comso.Team5.GP.artworks.entity.Artworks;
 import comso.Team5.GP.artworks.repository.ArtworkRepository;
+import comso.Team5.GP.comments.dto.response.CommentListResponse;
+import comso.Team5.GP.comments.entity.Comments;
+import comso.Team5.GP.comments.repository.CommentRepository;
 import comso.Team5.GP.global.exception.artworks.ArtworkException;
 import comso.Team5.GP.global.exception.artworks.ArtworkExceptionCode;
 import comso.Team5.GP.global.exception.users.UserException;
@@ -26,6 +29,7 @@ public class AdminService {
 
     private final ArtworkRepository artworkRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public Page<UserListResponse> getUserList(Role role, String keyword, Pageable pageable) {
@@ -87,5 +91,24 @@ public class AdminService {
         String message = artwork.isHidden() ? "숨김 처리가 완료되었습니다." : "숨김 처리가 해제되었습니다.";
 
         return new ArtworkHidingResponse(message, artwork.isHidden());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CommentListResponse> getCommentList(Role role, String keyword, Pageable pageable) {
+
+        if (role != Role.ADMIN) {
+            throw new UserException(UserExceptionCode.NOT_ADMIN);
+        }
+
+        Page<Comments> comments;
+
+        if (keyword == null || keyword.isBlank()) {
+            comments = commentRepository.findAll(pageable);
+        } else {
+            comments = commentRepository.findByNicknameContaing(keyword, pageable);
+        }
+
+
+        return comments.map(CommentListResponse::from);
     }
 }

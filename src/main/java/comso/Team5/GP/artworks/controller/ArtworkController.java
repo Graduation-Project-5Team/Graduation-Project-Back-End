@@ -3,6 +3,7 @@ package comso.Team5.GP.artworks.controller;
 import comso.Team5.GP.artworks.dto.request.ArtworkCreateRequest;
 import comso.Team5.GP.artworks.dto.request.ArtworkUpdateRequest;
 import comso.Team5.GP.artworks.dto.response.ArtworkCreateResponse;
+import comso.Team5.GP.artworks.dto.response.ArtworkDetailResponse;
 import comso.Team5.GP.artworks.dto.response.ArtworkResponse;
 import comso.Team5.GP.artworks.service.ArtworkService;
 import comso.Team5.GP.comments.dto.response.CommentResponse;
@@ -44,8 +45,8 @@ public class ArtworkController {
 
     // 작품 세부 정보 조회 (인증 - 비로그인/로그인 분류)
     @GetMapping("/{artworkId}/detail")
-    public ResponseEntity<ArtworkResponse> getArtworkDetail(@PathVariable Long artworkId,
-                                                      HttpServletRequest request) {
+    public ResponseEntity<ArtworkDetailResponse> getArtworkDetail(@PathVariable Long artworkId,
+                                                                           HttpServletRequest request) {
 
         String viewerKey = createViewerKey(request);
 
