@@ -2,10 +2,7 @@ package comso.Team5.GP.users.controller;
 
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
-import comso.Team5.GP.users.dto.request.TokenReissueRequest;
-import comso.Team5.GP.users.dto.request.UserLoginRequest;
-import comso.Team5.GP.users.dto.request.UserMeNicknameUpdateRequest;
-import comso.Team5.GP.users.dto.request.UserStudentIsVerifiedUpdateRequest;
+import comso.Team5.GP.users.dto.request.*;
 import comso.Team5.GP.users.dto.response.*;
 import comso.Team5.GP.users.service.RefreshTokenService;
 import comso.Team5.GP.users.service.UserService;
@@ -15,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +30,21 @@ public class UserController {
     private final UserService userService;
     private final RefreshTokenService refreshTokenService;
     private final JwtUtil jwtUtil;
+
+    @PostMapping("/signup")
+    public ResponseEntity<Map<String, String>> signup(@Valid @RequestBody SignupRequestDto dto) {
+        userService.signup(dto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("message", "회원가입이 완료되었습니다."));
+    }
+
+    @PostMapping("/student-signup")
+    public ResponseEntity<Map<String, String>> studentSignup(@Valid @RequestBody SutdentSignupRequestDto dto) {
+        userService.studentSignup(dto);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("message", "회원가입이 완료되었습니다."));
+    }
 
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponse> userLogin(@RequestBody UserLoginRequest loginRequest) {

@@ -24,13 +24,6 @@ public class AuthController {
     private final EmailService emailService;
     private final JwtUtil jwtUtil;
 
-    @PostMapping("/api/users/signup")
-    public ResponseEntity<Map<String, String>> signup(@Valid @RequestBody SignupRequestDto dto) {
-        userService.signup(dto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of("message", "회원가입이 완료되었습니다."));
-    }
-
     @PostMapping("/api/auth/email/send")
     public ResponseEntity<Map<String, String>> sendEmail(@Valid @RequestBody EmailSendRequestDto dto) {
         emailService.sendVerificationCode(dto.getEmail());

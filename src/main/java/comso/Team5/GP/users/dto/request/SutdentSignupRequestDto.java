@@ -4,11 +4,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-public class SignupRequestDto { // 회원가입 형식 검증
-
+@AllArgsConstructor
+public class SutdentSignupRequestDto {
     @NotBlank(message = "아이디를 입력해주세요.")
     @Size(min = 5, max = 20, message = "아이디는 5~20자 사이여야 합니다.")
     private String id;
@@ -24,5 +25,6 @@ public class SignupRequestDto { // 회원가입 형식 검증
     @Email(message = "올바른 이메일 형식이 아닙니다.")
     private String email;
 
+    @NotNull(message = "학과를 선택해주세요.")
     private Long deptId;
 }

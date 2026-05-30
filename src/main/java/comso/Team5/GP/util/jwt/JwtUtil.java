@@ -138,7 +138,6 @@ public class JwtUtil {
             throw new UserException(UserExceptionCode.INVALID_TOKEN);
         }
 
-        log.info("1 : {}" , roleClaim);
         return new JwtPrincipal(idClaim.asLong(), subject, Role.valueOf(roleClaim.asString()));
     }
 

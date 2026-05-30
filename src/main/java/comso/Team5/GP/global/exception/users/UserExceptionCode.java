@@ -15,8 +15,8 @@ public enum UserExceptionCode {
     USER_INFO_NICKNAME_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자의 정보가 존재하지 않아 닉네임이 불러오지 못했습니다."),
     USER_INFO_PASSWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자의 정보가 존재하지 않아 비밀번호를 불러오지 못했습니다."),
     NOT_ADMIN(HttpStatus.FORBIDDEN, "관리자 권한을 가지지 않은 사용자입니다."),
-    CANNOT_CHANGE_SELF_ROLE(HttpStatus.FORBIDDEN, "관리자 권한을 가진 자신을 다른 권한으로 바꿀 수 없습니다."),
-    SAME_EMAIL(HttpStatus.BAD_REQUEST, "현재 이메일과 동일한 이메일입니다.");
+    SAME_EMAIL(HttpStatus.BAD_REQUEST, "현재 이메일과 동일한 이메일입니다."),
+    CANNOT_CHANGE_SELF_ROLE(HttpStatus.FORBIDDEN, "관리자 권한을 가진 자신을 다른 권한으로 바꿀 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

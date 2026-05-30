@@ -3,11 +3,13 @@ package comso.Team5.GP.artworks.service;
 import comso.Team5.GP.artworks.dto.request.ArtworkCreateRequest;
 import comso.Team5.GP.artworks.dto.request.ArtworkUpdateRequest;
 import comso.Team5.GP.artworks.dto.response.ArtworkCreateResponse;
+import comso.Team5.GP.artworks.dto.response.ArtworkDetailResponse;
 import comso.Team5.GP.artworks.dto.response.ArtworkImagesResponse;
 import comso.Team5.GP.artworks.dto.response.ArtworkResponse;
 import comso.Team5.GP.artworks.entity.ArtworkImages;
 import comso.Team5.GP.artworks.entity.ArtworkLike;
 import comso.Team5.GP.artworks.repository.ArtworkLikeRepository;
+import comso.Team5.GP.users.dto.response.UserArtworkDetailResponseDto;
 import comso.Team5.GP.users.dto.response.UserIdResponse;
 import comso.Team5.GP.users.entity.Role;
 import comso.Team5.GP.global.exception.artworks.ArtworkException;
@@ -70,7 +72,7 @@ public class ArtworkService {
 
     // 작품 세부 정보 조회 (조회수)
     @Transactional(readOnly = true)
-    public ArtworkResponse getArtworkDetail(Long artworkId, String viewerKey) {
+    public ArtworkDetailResponse getArtworkDetail(Long artworkId, String viewerKey) {
 
         // 작품 정보 조회
         Artworks artwork = artworkRepository.findById(artworkId)
@@ -78,7 +80,7 @@ public class ArtworkService {
 
         // 작품 조회 수 증가시키는 메서드
         artworkVeiwsService.increaseViewCount(artwork.getArtworkId(), viewerKey);
-        return toResponse(artwork);
+        return toDetailResponse(artwork);
     }
 
     // 작품 등록
@@ -251,6 +253,25 @@ public class ArtworkService {
         return new ArtworkResponse(
                 artwork.getArtworkId(),
                 new UserIdResponse(artwork.getUsers().getUserId()),
+                artwork.getExhibitions() != null ? artwork.getExhibitions().getExhiId() : null,
+                artwork.getTitle(),
+                artwork.getDescription(),
+                imagesResponses,
+                artwork.getLikeCount(),
+                artworkVeiwsService.getViewCount(artwork.getArtworkId()),
+                artwork.getCreatedAt(),
+                artwork.getUpdatedAt()
+        );
+    }
+
+    private ArtworkDetailResponse toDetailResponse(Artworks artwork) {
+
+        List<ArtworkImagesResponse> imagesResponses = artwork.getImageUrl().stream().map(ArtworkImagesResponse::from)
+                .toList();
+
+        return new ArtworkDetailResponse(
+                artwork.getArtworkId(),
+                new UserArtworkDetailResponseDto(artwork.getUsers().getUserId(), artwork.getUsers().getNickname()),
                 artwork.getExhibitions() != null ? artwork.getExhibitions().getExhiId() : null,
                 artwork.getTitle(),
                 artwork.getDescription(),
