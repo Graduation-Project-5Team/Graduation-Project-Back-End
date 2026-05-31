@@ -23,6 +23,8 @@ public class ArtworkResponse {
 
     private List<ArtworkImagesResponse> images;
 
+    private boolean isHidden;
+
     private int likeCount;
 
     private Long views;

@@ -257,6 +257,26 @@ public class ArtworkService {
                 artwork.getTitle(),
                 artwork.getDescription(),
                 imagesResponses,
+                artwork.isHidden(),
+                artwork.getLikeCount(),
+                artworkVeiwsService.getViewCount(artwork.getArtworkId()),
+                artwork.getCreatedAt(),
+                artwork.getUpdatedAt()
+        );
+    }
+
+    private ArtworkDetailResponse toDetailResponse(Artworks artwork) {
+
+        List<ArtworkImagesResponse> imagesResponses = artwork.getImageUrl().stream().map(ArtworkImagesResponse::from)
+                .toList();
+
+        return new ArtworkDetailResponse(
+                artwork.getArtworkId(),
+                new UserArtworkDetailResponseDto(artwork.getUsers().getUserId(), artwork.getUsers().getNickname()),
+                artwork.getExhibitions() != null ? artwork.getExhibitions().getExhiId() : null,
+                artwork.getTitle(),
+                artwork.getDescription(),
+                imagesResponses,
                 artwork.getLikeCount(),
                 artworkVeiwsService.getViewCount(artwork.getArtworkId()),
                 artwork.getCreatedAt(),
