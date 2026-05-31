@@ -26,10 +26,10 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     ///  이메일 중복 체크
     boolean existsByEmail(String email);
 
-    @Query("SELECT u FROM Users u JOIN FETCH u.departments")
+    @Query("SELECT u FROM Users u LEFT JOIN FETCH u.departments")
     Page<Users> findAllAndWithDepartments(Pageable pageable);
 
-    @Query("SELECT u FROM Users u JOIN FETCH u.departments WHERE u.nickname LIKE %:keyword% OR u.id LIKE %:keyword%")
+    @Query("SELECT u FROM Users u LEFT JOIN FETCH u.departments WHERE u.nickname LIKE %:keyword% OR u.id LIKE %:keyword%")
     Page<Users> findByNickNameContaining(String keyword, Pageable pageable);
 
     Optional<Users> findByEmail(String email); // 임시, 다른 기능(비밀번호 찾기 등)을 만들 때 필요할 예정

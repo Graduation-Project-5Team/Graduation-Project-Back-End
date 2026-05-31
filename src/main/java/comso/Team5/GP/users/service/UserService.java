@@ -192,7 +192,17 @@ public class UserService{
         Users user = userRepository.findById(userId).orElseThrow( // findByCheckId -> findById
                 () -> new UserException(UserExceptionCode.USER_NOT_FOUND));
 
-        return new UserMeResponse(user.getId(), user.getNickname(), user.getRole().name(), user.getEmail(), user.getDepartments().getDeptId(), user.getDepartments().getName(), user.getProfileImage());
+        Departments departments = user.getDepartments();
+
+        return new UserMeResponse(
+                user.getId(),
+                user.getNickname(),
+                user.getRole().name(),
+                user.getEmail(),
+                departments != null ? departments.getDeptId() : null,
+                departments != null ? departments.getName() : null,
+                user.getProfileImage()
+        );
     }
 
     // 유저 닉네임 변경

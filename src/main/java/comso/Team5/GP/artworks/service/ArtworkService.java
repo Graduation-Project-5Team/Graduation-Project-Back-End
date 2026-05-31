@@ -257,6 +257,7 @@ public class ArtworkService {
                 artwork.getTitle(),
                 artwork.getDescription(),
                 imagesResponses,
+                artwork.isHidden(),
                 artwork.getLikeCount(),
                 artworkVeiwsService.getViewCount(artwork.getArtworkId()),
                 artwork.getCreatedAt(),
