@@ -2,10 +2,7 @@ package comso.Team5.GP.artworks.service;
 
 import comso.Team5.GP.artworks.dto.request.ArtworkCreateRequest;
 import comso.Team5.GP.artworks.dto.request.ArtworkUpdateRequest;
-import comso.Team5.GP.artworks.dto.response.ArtworkCreateResponse;
-import comso.Team5.GP.artworks.dto.response.ArtworkDetailResponse;
-import comso.Team5.GP.artworks.dto.response.ArtworkImagesResponse;
-import comso.Team5.GP.artworks.dto.response.ArtworkResponse;
+import comso.Team5.GP.artworks.dto.response.*;
 import comso.Team5.GP.artworks.entity.ArtworkImages;
 import comso.Team5.GP.artworks.entity.ArtworkLike;
 import comso.Team5.GP.artworks.repository.ArtworkLikeRepository;
@@ -54,7 +51,7 @@ public class ArtworkService {
     private final ExhibitionRepository exhibitionRepository;
     private final UserRepository userRepository;
     private final ArtworkLikeRepository artworkLikeRepository;
-    private final ArtworkVeiwsService artworkVeiwsService;
+    private final ArtworkViewsService artworkViewsService;
 
     // 작품 목록 조회 (페이지네이션)
     @Transactional(readOnly = true)
@@ -67,6 +64,7 @@ public class ArtworkService {
     public ArtworkResponse getArtwork(Long artworkId) {
         Artworks artwork = artworkRepository.findById(artworkId)
                 .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
+        // 관리 중인 엔티티이므로 별도 save 호출 없이 트랜잭션 커밋 시 변경사항이 반영된다.
         return toResponse(artwork);
     }
 
@@ -79,7 +77,7 @@ public class ArtworkService {
                 .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
 
         // 작품 조회 수 증가시키는 메서드
-        artworkVeiwsService.increaseViewCount(artwork.getArtworkId(), viewerKey);
+        artworkViewsService.increaseViewCount(artwork.getArtworkId(), viewerKey);
         return toDetailResponse(artwork);
     }
 
@@ -146,14 +144,20 @@ public class ArtworkService {
             if (request.getDescription() != null) artwork.setDescription(request.getDescription());
         }
 
-            // 새 이미지 저장
+        // keepImageIds가 null이고 새 이미지도 없으면 기존 이미지 목록을 그대로 유지한다.
+        boolean hasKeepImageIds = request != null && request.getKeepImageIds() != null;
+        boolean hasNewImages = images != null && !images.isEmpty();
+
+        // 이미지 변경 요청이 있을 때만 이미지 목록을 재구성해 의도치 않은 전체 삭제를 막는다.
+        if (hasKeepImageIds || hasNewImages) {
             File dir = new File(uploadDir);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
+
             List<ArtworkImages> finalImages = new ArrayList<>();
 
-            if(request != null && request.getKeepImageIds() != null) {
+            if (hasKeepImageIds) {
                 for (ArtworkImages image : artwork.getImageUrl()) {
                     if (request.getKeepImageIds().contains(image.getArtworkImageId())) {
                         finalImages.add(image);
@@ -161,16 +165,14 @@ public class ArtworkService {
                 }
             }
 
-            List<ArtworkImages> newImages = saveImages(images, dir);
-            finalImages.addAll(newImages);
-
-            // DB에서 이미지 업데이트 (cascade와 orphanRemoval에 의해 처리됨)
+            finalImages.addAll(saveImages(images, dir));
             artwork.setImages(finalImages);
+        }
 
         artwork.setUpdatedAt(LocalDateTime.now());
 
-        Artworks updatedArtwork = artworkRepository.save(artwork);
-        return toResponse(updatedArtwork);
+        // 관리 중인 엔티티이므로 별도 save 호출 없이 트랜잭션 커밋 시 변경사항이 반영된다.
+        return toResponse(artwork);
     }
 
     // 작품 삭제 (본인만 가능)
@@ -245,6 +247,15 @@ public class ArtworkService {
         artwork.removeLike();
     }
 
+    // 내가 좋아요한 작품 목록 조회
+    @Transactional(readOnly = true)
+    public List<LikedArtworkResponse> getLikedArtworks(Long userId) {
+        return artworkLikeRepository.findByUserIdWithArtwork(userId)
+                .stream()
+                .map(LikedArtworkResponse::from)
+                .toList();
+    }
+
     private ArtworkResponse toResponse(Artworks artwork) {
 
         List<ArtworkImagesResponse> imagesResponses = artwork.getImageUrl().stream().map(ArtworkImagesResponse::from)
@@ -259,7 +270,7 @@ public class ArtworkService {
                 imagesResponses,
                 artwork.isHidden(),
                 artwork.getLikeCount(),
-                artworkVeiwsService.getViewCount(artwork.getArtworkId()),
+                artworkViewsService.getViewCount(artwork.getArtworkId()),
                 artwork.getCreatedAt(),
                 artwork.getUpdatedAt()
         );
@@ -278,7 +289,7 @@ public class ArtworkService {
                 artwork.getDescription(),
                 imagesResponses,
                 artwork.getLikeCount(),
-                artworkVeiwsService.getViewCount(artwork.getArtworkId()),
+                artworkViewsService.getViewCount(artwork.getArtworkId()),
                 artwork.getCreatedAt(),
                 artwork.getUpdatedAt()
         );
@@ -297,7 +308,8 @@ public class ArtworkService {
                     fileToDelete.delete();
                 }
             } catch (Exception e) {
-                System.err.println("Failed to delete image file: " + image.getImageUrl() + " - " + e.getMessage());
+                // @Slf4j 기반 로그로 남겨 운영 환경에서 파일 삭제 실패 원인을 추적한다.
+                log.error("Failed to delete image file: {}", image.getImageUrl(), e);
             }
         }
     }
