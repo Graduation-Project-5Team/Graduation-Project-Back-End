@@ -104,8 +104,6 @@ public class UserService{
             throw new ResponseStatusException(BAD_REQUEST, "이메일 인증이 완료되지 않았습니다.");
         }
 
-        Departments departments = departmentRepository.getById(dto.getDeptId());
-
         // 학생 여부 판단
         Role role = dto.getEmail().endsWith(STUDENT_EMAIL_DOMAIN)
                 ? Role.STUDENT

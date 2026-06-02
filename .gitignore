@@ -64,3 +64,5 @@ gradle-app.setting
 # custom : email method - application-secret.yaml
 application-secret.yaml
 .env
+.env.DS_Store
+**/.DS_Store
