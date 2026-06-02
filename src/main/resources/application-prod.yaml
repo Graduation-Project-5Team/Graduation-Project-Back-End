@@ -1,0 +1,48 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  h2:
+    console:
+      enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:validate}
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  sql:
+    init:
+      mode: never
+
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: ${MAX_FILE_SIZE:30MB}
+      max-request-size: ${MAX_REQUEST_SIZE:100MB}
+
+  mail:
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+
+jwt:
+  secretKey: ${JWT_SECRET_KEY}
+
+server:
+  port: ${SERVER_PORT:8080}
+  forward-headers-strategy: framework
+
+file:
+  upload-dir: ${FILE_UPLOAD_DIR:/app/images}
