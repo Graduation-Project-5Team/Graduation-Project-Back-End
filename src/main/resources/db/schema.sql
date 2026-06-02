@@ -18,9 +18,6 @@ INSERT INTO Users(id, email, nickname, password, role, dept_id, is_verified, cre
 VALUES ('user123', 'user123@gsuite.induk.ac.kr', '유저1234', 'user1234', 'STUDENT', 1, true, CURRENT_TIMESTAMP, 'default-profileImage.png');
 INSERT INTO Users(id, email, nickname, password, role, dept_id, is_verified, created_at, profile_image)
 VALUES ('user1234', 'u12345678@naver.com', '유저1234', 'u12345678', 'USER', null, false, CURRENT_TIMESTAMP, 'default-profileImage.png');
-INSERT INTO Users(id, email, nickname, password, role, dept_id, is_verified, created_at, profile_image)
-VALUES ('webtoon123', '202300100@gsuite.induk.ac.kr', '김아입니다', 'webtoon123', 'STUDENT', 11, true, CURRENT_TIMESTAMP, 'default-profileImage.png');
-
 -- 전시 추가
 INSERT INTO Exhibitions (name, description, thumbnail_image, dept_id, start_date, end_date, location)
 values ('컴퓨터 소프트웨어학과 전시', '컴퓨터 소프트웨어학과 전시입니다.',
