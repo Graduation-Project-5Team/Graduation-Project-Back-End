@@ -76,6 +76,10 @@ public class ArtworkService {
         Artworks artwork = artworkRepository.findById(artworkId)
                 .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
 
+        if (artwork.isHidden()) {
+            throw new ArtworkException(ArtworkExceptionCode.ARTWORK_IS_HIDING);
+        }
+
         // 작품 조회 수 증가시키는 메서드
         artworkViewsService.increaseViewCount(artwork.getArtworkId(), viewerKey);
         return toDetailResponse(artwork);
