@@ -14,7 +14,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class ArtworkVeiwsService {
+public class ArtworkViewsService {
 
     // 비로그인(ip) / 로그인 사용자가 해당 작품의 게시글을 조회 시 만료 시간 24시간 등록
     private static final Duration VIEW_DUPLICATE_TTL = Duration.ofHours(24);
