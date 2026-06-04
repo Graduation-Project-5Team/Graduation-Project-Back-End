@@ -2,10 +2,7 @@ package comso.Team5.GP.artworks.service;
 
 import comso.Team5.GP.artworks.dto.request.ArtworkCreateRequest;
 import comso.Team5.GP.artworks.dto.request.ArtworkUpdateRequest;
-import comso.Team5.GP.artworks.dto.response.ArtworkCreateResponse;
-import comso.Team5.GP.artworks.dto.response.ArtworkDetailResponse;
-import comso.Team5.GP.artworks.dto.response.ArtworkImagesResponse;
-import comso.Team5.GP.artworks.dto.response.ArtworkResponse;
+import comso.Team5.GP.artworks.dto.response.*;
 import comso.Team5.GP.artworks.entity.ArtworkImages;
 import comso.Team5.GP.artworks.entity.ArtworkLike;
 import comso.Team5.GP.artworks.repository.ArtworkLikeRepository;
@@ -78,6 +75,10 @@ public class ArtworkService {
         // 작품 정보 조회
         Artworks artwork = artworkRepository.findById(artworkId)
                 .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
+
+        if (artwork.isHidden()) {
+            throw new ArtworkException(ArtworkExceptionCode.ARTWORK_IS_HIDING);
+        }
 
         // 작품 조회 수 증가시키는 메서드
         artworkViewsService.increaseViewCount(artwork.getArtworkId(), viewerKey);
@@ -248,6 +249,15 @@ public class ArtworkService {
 
         // 작품의 좋아요 수 감소
         artwork.removeLike();
+    }
+
+    // 내가 좋아요한 작품 목록 조회
+    @Transactional(readOnly = true)
+    public List<LikedArtworkResponse> getLikedArtworks(Long userId) {
+        return artworkLikeRepository.findByUserIdWithArtwork(userId)
+                .stream()
+                .map(LikedArtworkResponse::from)
+                .toList();
     }
 
     private ArtworkResponse toResponse(Artworks artwork) {

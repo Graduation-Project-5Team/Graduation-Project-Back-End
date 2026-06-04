@@ -5,6 +5,7 @@ import comso.Team5.GP.artworks.dto.request.ArtworkUpdateRequest;
 import comso.Team5.GP.artworks.dto.response.ArtworkCreateResponse;
 import comso.Team5.GP.artworks.dto.response.ArtworkDetailResponse;
 import comso.Team5.GP.artworks.dto.response.ArtworkResponse;
+import comso.Team5.GP.artworks.dto.response.LikedArtworkResponse;
 import comso.Team5.GP.artworks.service.ArtworkService;
 import comso.Team5.GP.comments.dto.response.CommentResponse;
 import comso.Team5.GP.comments.service.CommentService;
@@ -113,6 +114,13 @@ public class ArtworkController {
                                                   HttpServletRequest request) {
         JwtPrincipal principal = extractPrincipal(request);
         return ResponseEntity.ok(artworkService.getLikeStatus(artworkId, principal.userId()));
+    }
+
+    // 내가 좋아요한 작품 목록 조회 (인증 필요)
+    @GetMapping("/liked")
+    public ResponseEntity<List<LikedArtworkResponse>> getLikedArtworks(HttpServletRequest request) {
+        JwtPrincipal principal = extractPrincipal(request);
+        return ResponseEntity.ok(artworkService.getLikedArtworks(principal.userId()));
     }
 
     // 좋아요 추가
