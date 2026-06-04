@@ -6,10 +6,15 @@ import comso.Team5.GP.artworks.repository.ArtworkRepository;
 import comso.Team5.GP.comments.dto.response.CommentListResponse;
 import comso.Team5.GP.comments.entity.Comments;
 import comso.Team5.GP.comments.repository.CommentRepository;
+import comso.Team5.GP.departments.entity.Departments;
+import comso.Team5.GP.departments.repository.DepartmentRepository;
 import comso.Team5.GP.global.exception.artworks.ArtworkException;
 import comso.Team5.GP.global.exception.artworks.ArtworkExceptionCode;
+import comso.Team5.GP.global.exception.departments.DepartmentException;
+import comso.Team5.GP.global.exception.departments.DepartmentExceptionCode;
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
+import comso.Team5.GP.users.dto.request.AdminUserDepartmentsChangeRequest;
 import comso.Team5.GP.users.dto.request.UserRoleChangeRequest;
 import comso.Team5.GP.users.dto.response.UserListResponse;
 import comso.Team5.GP.users.dto.response.UserRoleChangeResponse;
@@ -30,6 +35,7 @@ public class AdminService {
     private final ArtworkRepository artworkRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final DepartmentRepository departmentRepository;
 
     @Transactional
     public Page<UserListResponse> getUserList(Role role, String keyword, Pageable pageable) {
@@ -110,5 +116,22 @@ public class AdminService {
 
 
         return comments.map(CommentListResponse::from);
+    }
+
+    @Transactional
+    public void userDepartmentsChange(JwtPrincipal principal, AdminUserDepartmentsChangeRequest dto) {
+
+
+        if (principal.role() != Role.ADMIN) {
+            throw new UserException(UserExceptionCode.NOT_ADMIN);
+        }
+
+        Departments departments = departmentRepository.findById(dto.getDeptId())
+                .orElseThrow(() -> new DepartmentException(DepartmentExceptionCode.NOT_FOUND_NAME));
+
+        Users user = userRepository.findById(dto.getUserId())
+                        .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        user.userDepartmentsChange(departments);
     }
 }

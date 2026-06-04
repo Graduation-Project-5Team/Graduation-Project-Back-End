@@ -91,4 +91,8 @@ public class Users {
         this.isVerified = true;
     }
 
+    public void userDepartmentsChange(Departments departments) {
+        this.departments = departments;
+    }
+
 }
