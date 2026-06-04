@@ -4,6 +4,7 @@ import comso.Team5.GP.artworks.dto.response.ArtworkHidingResponse;
 import comso.Team5.GP.comments.dto.response.CommentListResponse;
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
+import comso.Team5.GP.users.dto.request.AdminUserDepartmentsChangeRequest;
 import comso.Team5.GP.users.dto.request.UserRoleChangeRequest;
 import comso.Team5.GP.users.dto.response.UserListResponse;
 import comso.Team5.GP.users.dto.response.UserRoleChangeResponse;
@@ -17,8 +18,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -74,6 +78,17 @@ public class AdminController {
         ArtworkHidingResponse response = adminService.artworkHiding(principal.role(), artworkId);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/departments-change")
+    public ResponseEntity<Map<String, String>> userDepartmentsChange(
+            HttpServletRequest request,@Valid @RequestBody AdminUserDepartmentsChangeRequest dto) {
+        JwtPrincipal principal = extractPrincipal(request);
+
+        adminService.userDepartmentsChange(principal, dto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(Map.of("message", "학과 변경이 완료되었습니다."));
     }
 
     private JwtPrincipal extractPrincipal(HttpServletRequest request) {
