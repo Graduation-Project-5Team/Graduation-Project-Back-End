@@ -147,10 +147,8 @@ public class ExhibitionService {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
         // 관리자 혹은 교직원이 아닌 경우 예외처리
-        if (user.getRole() != Role.ADMIN) {
+        if (user.getRole() != Role.ADMIN && user.getRole() != Role.STAFF) {
             throw new ExhibitionException(ExhibitionExceptionCode.NOT_ADMIN);
-        } else if (user.getRole() != Role.STAFF) {
-            throw new ExhibitionException(ExhibitionExceptionCode.NOT_STAFF);
         }
     }
 
