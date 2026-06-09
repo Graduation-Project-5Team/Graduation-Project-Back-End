@@ -39,6 +39,7 @@ public class UserListResponse {
                 .nickname(user.getNickname())
                 .id(user.getId())
                 .email(user.getEmail())
+                .profileImage(user.getProfileImage())
                 .role(user.getRole())
                 .departments(user.getDepartments())
                 .isVerified(user.isVerified())
