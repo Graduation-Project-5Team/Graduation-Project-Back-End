@@ -97,4 +97,7 @@ public class Users {
         this.departments = departments;
     }
 
+    public void userPasswordReset(String password) {
+        this.password = password;
+    }
 }

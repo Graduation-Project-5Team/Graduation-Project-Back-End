@@ -249,7 +249,7 @@ public class UserService{
         Users user = userRepository.findById(userId).
                 orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
 
-        user.updateIsVerifiedAndEmail(user.getEmail(), departments, role);
+        user.updateIsVerifiedAndEmail(dto.getEmail(), departments, role);
     }
 
     // 유저 프로필 이미지 추가/수정 서비스 메서드
@@ -269,6 +269,21 @@ public class UserService{
         user.updateUserProfileImage(filePath);
 
         return new UserUpdateProfileImageResponse(filePath);
+    }
+
+    // 유저가 분실한 비밀번호를 변경하기 위한 서비스 로직
+    @Transactional
+    public void userPasswordResetUpdate(UserPasswordResetUpdateReqeustDto dto) {
+
+        // 이메일 인증 완료 여부 체크
+        if (!emailVerificationRepository.existsByEmailAndIsVerifiedTrue(dto.getEmail())) {
+            throw new ResponseStatusException(BAD_REQUEST, "이메일 인증이 완료되지 않았습니다.");
+        }
+
+        Users user = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        user.userPasswordReset(dto.getPassword());
     }
 
     private String imageSave(MultipartFile image, File dir) {
