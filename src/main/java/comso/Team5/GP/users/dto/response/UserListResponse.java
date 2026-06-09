@@ -23,6 +23,8 @@ public class UserListResponse {
 
     private String email;
 
+    private String profileImage;
+
     private Role role;
 
     private Departments departments;

@@ -2,7 +2,6 @@ package comso.Team5.GP.users.service;
 
 import comso.Team5.GP.departments.entity.Departments;
 import comso.Team5.GP.departments.repository.DepartmentRepository;
-import comso.Team5.GP.departments.service.DepartmentService;
 import comso.Team5.GP.global.exception.departments.DepartmentException;
 import comso.Team5.GP.global.exception.departments.DepartmentExceptionCode;
 import comso.Team5.GP.global.exception.users.UserException;
@@ -15,7 +14,6 @@ import comso.Team5.GP.users.entity.Role;
 import comso.Team5.GP.users.dto.response.UserMeResponse;
 import comso.Team5.GP.users.entity.Users;
 import comso.Team5.GP.users.repository.UserRepository;
-import comso.Team5.GP.util.jwt.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
 import comso.Team5.GP.util.jwt.JwtUtil;
 import comso.Team5.GP.users.repository.EmailVerificationRepository;
