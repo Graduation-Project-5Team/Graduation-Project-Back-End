@@ -119,9 +119,9 @@ public class UserController {
     @PatchMapping("/me/isVerified")
     public ResponseEntity<Map<String, String>> isVerifiedAndEmailUpdate(@Valid @RequestBody UserStudentIsVerifiedUpdateRequest dto,
                                                                      HttpServletRequest request) {
-        Long userId = extractPrincipal(request).userId();
+        long userId = extractPrincipal(request).userId();
 
-        userService.isVerifiedAndEmailUpdate(userId, dto.getEmail());
+        userService.isVerifiedAndEmailUpdate(userId, dto);
 
         return ResponseEntity.ok(Map.of("message", "학생 인증이 완료되었습니다."));
     }
@@ -130,8 +130,6 @@ public class UserController {
 
         // 사용자 토큰을 이용해 권한 확인
         String authHeader = request.getHeader("Authorization");
-
-        log.info("authHeader: {}", authHeader);
 
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new UserException(UserExceptionCode.AUTH_HEADER_MISSING);
