@@ -7,19 +7,17 @@ import comso.Team5.GP.global.exception.departments.DepartmentException;
 import comso.Team5.GP.global.exception.departments.DepartmentExceptionCode;
 import comso.Team5.GP.global.exception.users.UserException;
 import comso.Team5.GP.global.exception.users.UserExceptionCode;
-import comso.Team5.GP.users.dto.request.SutdentSignupRequestDto;
-import comso.Team5.GP.users.dto.request.UserMePasswordUpdateRequest;
+import comso.Team5.GP.users.dto.request.*;
 import comso.Team5.GP.users.dto.response.UserLoginResponse;
 import comso.Team5.GP.users.dto.response.UserMeNicknameUpdateResponse;
 import comso.Team5.GP.users.dto.response.UserUpdateProfileImageResponse;
 import comso.Team5.GP.users.entity.Role;
-import comso.Team5.GP.users.dto.request.UserLoginRequest;
 import comso.Team5.GP.users.dto.response.UserMeResponse;
 import comso.Team5.GP.users.entity.Users;
 import comso.Team5.GP.users.repository.UserRepository;
+import comso.Team5.GP.util.jwt.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
 import comso.Team5.GP.util.jwt.JwtUtil;
-import comso.Team5.GP.users.dto.request.SignupRequestDto;
 import comso.Team5.GP.users.repository.EmailVerificationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -238,17 +236,20 @@ public class UserService{
     }
 
     @Transactional
-    public void isVerifiedAndEmailUpdate(Long userId, String email) {
+    public void isVerifiedAndEmailUpdate(long userId, UserStudentIsVerifiedUpdateRequest dto) {
 
         // 이메일 인증 완료 여부 체크
-        if (!emailVerificationRepository.existsByEmailAndIsVerifiedTrue(email)) {
+        if (!emailVerificationRepository.existsByEmailAndIsVerifiedTrue(dto.getEmail())) {
             throw new ResponseStatusException(BAD_REQUEST, "이메일 인증이 완료되지 않았습니다.");
         }
+        Role role = Role.STUDENT;
 
+        Departments departments = departmentRepository.findById(dto.getDepartmentId()).
+                orElseThrow(() -> new DepartmentException(DepartmentExceptionCode.NOT_FOUND_NAME));
         Users user = userRepository.findById(userId).
                 orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
 
-        user.updateIsVerifiedAndEmail(email);
+        user.updateIsVerifiedAndEmail(user.getEmail(), departments, role);
     }
 
     // 유저 프로필 이미지 추가/수정 서비스 메서드

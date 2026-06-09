@@ -86,9 +86,11 @@ public class Users {
 
     public void updateUserRole(Role role) { this.role = role; }
 
-    public void updateIsVerifiedAndEmail(String email) {
+    public void updateIsVerifiedAndEmail(String email,Departments departments, Role role) {
         this.email = email;
         this.isVerified = true;
+        this.departments = departments;
+        this.role = role;
     }
 
     public void userDepartmentsChange(Departments departments) {
