@@ -126,6 +126,13 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "학생 인증이 완료되었습니다."));
     }
 
+    // 잃어버린 비밀번호 변경 업데이트 API
+    @PatchMapping("/password-reset")
+    public ResponseEntity<Map<String, String>> userPasswordResetUpdate(@RequestBody UserPasswordResetUpdateReqeustDto dto) {
+        userService.userPasswordResetUpdate(dto);
+        return ResponseEntity.ok(Map.of("message", "비밀번호 변경이 완료되었습니다."));
+    }
+
     private JwtPrincipal extractPrincipal(HttpServletRequest request) {
 
         // 사용자 토큰을 이용해 권한 확인
@@ -140,4 +147,5 @@ public class UserController {
 
         return jwtUtil.getPrincipalFromToken(token);
     }
+
 }

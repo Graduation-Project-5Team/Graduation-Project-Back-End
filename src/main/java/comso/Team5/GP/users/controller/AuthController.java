@@ -87,6 +87,20 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "이메일 인증이 완료되었습니다."));
     }
 
+    // 비밀번호 분실 시 비밀번호 변경 API
+    @PostMapping("/api/auth/email/password-reset-send")
+    public ResponseEntity<Map<String, String>> userPasswordResetSend(@Valid @RequestBody UserEmailPasswordResetSendRequestDto dto) {
+        emailService.updateSendEmail(dto.getEmail());
+        return ResponseEntity.ok(Map.of("message", "인증코드가 발송되었습니다. (유효시간 5분)"));
+    }
+
+    // 비밀번호 분실 시 비밀번호 변경 API
+    @PostMapping("/api/auth/email/password-reset-verify")
+    public ResponseEntity<Map<String, String>> userPasswordResetVerify(@RequestBody UserEmailPasswordRequestVerifyRequestDto dto) {
+        emailService.verifyCode(dto.getEmail(), dto.getCode());
+        return ResponseEntity.ok(Map.of("message", "이메일 인증이 완료되었습니다."));
+    }
+
     private JwtPrincipal extractPrincipal(HttpServletRequest request) {
         // 리퀘스트 헤더에 권한 확인
         String authHeader = request.getHeader("Authorization");
