@@ -12,7 +12,8 @@ public enum ArtworkExceptionCode {
     ALREADY_LIKED(HttpStatus.BAD_REQUEST, "이미 좋아요를 누른 작품입니다."),
     READY_LIKE(HttpStatus.BAD_REQUEST, "좋아요를 누른 상태로 요청해야 가능한 서비스입니다."),
     USER_OR_ARTWORK_NOT_FOUND(HttpStatus.BAD_REQUEST, "사용자나 작품이 존재하지 않습니다."),
-    ARTWORK_IS_HIDING(HttpStatus.FORBIDDEN, "작품이 숨김 처리가 되었습니다.");
+    ARTWORK_IS_HIDING(HttpStatus.FORBIDDEN, "작품이 숨김 처리가 되었습니다."),
+    USER_DEPARTMENTS_MISMATCH(HttpStatus.FORBIDDEN, "사용자의 학과가 전시관의 학과와 일치하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

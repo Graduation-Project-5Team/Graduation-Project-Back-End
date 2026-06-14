@@ -6,6 +6,7 @@ import comso.Team5.GP.artworks.dto.response.*;
 import comso.Team5.GP.artworks.entity.ArtworkImages;
 import comso.Team5.GP.artworks.entity.ArtworkLike;
 import comso.Team5.GP.artworks.repository.ArtworkLikeRepository;
+import comso.Team5.GP.comments.repository.CommentRepository;
 import comso.Team5.GP.users.dto.response.UserArtworkDetailResponseDto;
 import comso.Team5.GP.users.dto.response.UserIdResponse;
 import comso.Team5.GP.users.entity.Role;
@@ -51,6 +52,7 @@ public class ArtworkService {
     private final ExhibitionRepository exhibitionRepository;
     private final UserRepository userRepository;
     private final ArtworkLikeRepository artworkLikeRepository;
+    private final CommentRepository commentRepository;
     private final ArtworkViewsService artworkViewsService;
 
     // 작품 목록 조회 (페이지네이션)
@@ -100,6 +102,11 @@ public class ArtworkService {
         // 학생 인증 확인
         if (user.getRole() != Role.STUDENT && user.getRole() != Role.ADMIN) {
             throw new ArtworkException(ArtworkExceptionCode.NOT_STUDENT);
+        }
+
+        // 학생이 올리는 전시관 학생 학과랑 같은지 확인
+        if (user.getDepartments().getDeptId() != exhibitions.getDepartments().getDeptId()) {
+            throw new ArtworkException(ArtworkExceptionCode.USER_DEPARTMENTS_MISMATCH);
         }
 
         // /uploads가 존재하지 않을 경우 디렉터리 생성
@@ -180,17 +187,27 @@ public class ArtworkService {
     }
 
     // 작품 삭제 (본인만 가능)
+    @Transactional
     public void delete(Long artworkId, Long userId) {
         Artworks artwork = artworkRepository.findById(artworkId)
                 .orElseThrow(() -> new ArtworkException(ArtworkExceptionCode.NOT_FOUND_ARTWORK));
 
-        if (!artwork.getUsers().getUserId().equals(userId)) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        if (!artwork.getUsers().getUserId().equals(userId) && !user.getRole().equals(Role.ADMIN)) {
             throw new ArtworkException(ArtworkExceptionCode.FORBIDDEN_ARTWORK);
         }
 
-        // 물리적 파일 삭제
-        deletePhysicalFiles(new ArrayList<>(artwork.getImageUrl()));
+        commentRepository.deleteByArtworkId(artworkId);
 
+        List<ArtworkImages> imagesToDelete = new ArrayList<>(artwork.getImageUrl());
+
+        // 좋아요 삭제
+        artworkLikeRepository.deleteByArtworkId(artworkId);
+
+        // 물리적 이미지 파일 삭제
+        deletePhysicalFiles(imagesToDelete);
         artworkRepository.delete(artwork);
     }
 
@@ -287,7 +304,7 @@ public class ArtworkService {
 
         return new ArtworkDetailResponse(
                 artwork.getArtworkId(),
-                new UserArtworkDetailResponseDto(artwork.getUsers().getUserId(), artwork.getUsers().getNickname()),
+                new UserArtworkDetailResponseDto(artwork.getUsers().getUserId(), artwork.getUsers().getNickname(), artwork.getUsers().getProfileImage()),
                 artwork.getExhibitions() != null ? artwork.getExhibitions().getExhiId() : null,
                 artwork.getTitle(),
                 artwork.getDescription(),
