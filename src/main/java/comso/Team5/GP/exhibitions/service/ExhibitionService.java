@@ -1,5 +1,7 @@
 package comso.Team5.GP.exhibitions.service;
 
+import comso.Team5.GP.artworks.entity.Artworks;
+import comso.Team5.GP.artworks.repository.ArtworkRepository;
 import comso.Team5.GP.departments.entity.Departments;
 import comso.Team5.GP.departments.repository.DepartmentRepository;
 import comso.Team5.GP.exhibitions.dto.reponse.ExhibitionCreateResponse;
@@ -17,6 +19,7 @@ import comso.Team5.GP.users.entity.Role;
 import comso.Team5.GP.users.entity.Users;
 import comso.Team5.GP.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +31,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -35,6 +39,7 @@ public class ExhibitionService {
 
     private final ExhibitionRepository exhibitionsRepository;
     private final DepartmentRepository departmentsRepository;
+    private final ArtworkRepository artworkRepository;
     private final UserRepository userRepository;
 
     // applciation.yaml 파일에 경로를 변수로 지정
@@ -136,6 +141,14 @@ public class ExhibitionService {
 
         Exhibitions exhibition = exhibitionsRepository.findById(exhiId)
                 .orElseThrow(() -> new ExhibitionException(ExhibitionExceptionCode.NOT_FOUND_EXHIBITION));
+
+
+        // exhibitionId로 엮여있는 작품들 조회해서 리스트화 함.
+        List<Artworks> artworks = artworkRepository.findByExhibitions_ExhiId(exhibition.getExhiId());
+
+        if (artworks.size() > 0) {
+            throw new ExhibitionException(ExhibitionExceptionCode.EXHIBITION_HAS_ARTWORKS);
+        }
 
         // 썸네일 이미지 파일 삭제
         deletePhysicalFile(exhibition.getThumbnailImage());

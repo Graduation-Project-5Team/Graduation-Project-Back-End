@@ -138,7 +138,8 @@ public class CommentService {
                 comment.getCommentId(),
                 new CommentUserResponseDto(
                         comment.getUser().getUserId(),
-                        comment.getUser().getNickname()
+                        comment.getUser().getNickname(),
+                        comment.getUser().getProfileImage()
                 ),
                 comment.getArtwork().getArtworkId(),
                 comment.getContent(),

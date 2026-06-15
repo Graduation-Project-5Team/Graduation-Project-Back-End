@@ -8,4 +8,5 @@ import lombok.Getter;
 public class UserArtworkDetailResponseDto {
     private Long userId;
     private String nickname;
+    private String profileImage;
 }

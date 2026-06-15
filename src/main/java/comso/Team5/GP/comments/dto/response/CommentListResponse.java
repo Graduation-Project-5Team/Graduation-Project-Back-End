@@ -34,7 +34,7 @@ public class CommentListResponse {
     public static CommentListResponse from(Comments comments) {
         return CommentListResponse.builder()
                 .commentId(comments.getCommentId())
-                .user(new CommentUserResponseDto(comments.getUser().getUserId(), comments.getUser().getNickname()))
+                .user(new CommentUserResponseDto(comments.getUser().getUserId(), comments.getUser().getNickname(), comments.getUser().getProfileImage()))
                 .artworkId(comments.getArtwork().getArtworkId())
                 .content(comments.getContent())
                 .createdAt(comments.getCreatedAt())

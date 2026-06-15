@@ -9,4 +9,6 @@ public class CommentUserResponseDto {
     private Long userId;
 
     private String nickname;
+
+    private String profileImage;
 }
